@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PM Math — Saurav Mishra</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green-900: #0a2e1a; --green-800: #103d22; --green-700: #15522e;
+      --green-600: #1a6639; --green-500: #1f7a44; --green-400: #2a9d5c;
+      --green-300: #4cba78; --green-200: #84d4a3; --green-100: #c0ecce;
+      --green-50: #e8f7ed; --gold: #d4a017; --gold-light: #f0c84a;
+      --white: #ffffff; --off-white: #f7faf8; --text-dark: #0f1f15;
+      --text-mid: #2e5040; --text-muted: #5a7a68; --border: rgba(26,102,57,0.15);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: var(--text-dark); overflow-x: hidden; }
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10,46,26,0.97); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 60px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .nav-logo { font-family: 'Playfair Display', serif; color: var(--white); font-size: 1.25rem; font-weight: 700; }
+    .nav-logo span { color: var(--gold-light); }
+    .nav-links { display: flex; gap: 0.2rem; flex-wrap: wrap; }
+    .nav-links a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.78rem; font-weight: 500; padding: 0.3rem 0.6rem; border-radius: 6px; transition: all 0.2s; }
+    .nav-links a:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .nav-links a.active { background: var(--green-600); color: #fff; }
+    .hero { min-height: 100vh; background: linear-gradient(155deg, var(--green-900) 0%, var(--green-700) 50%, var(--green-500) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 6rem 2rem 4rem; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 20% 50%, rgba(212,160,23,0.12) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(76,186,120,0.1) 0%, transparent 40%); }
+    .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: var(--gold-light); font-size: 0.8rem; font-weight: 600; padding: 6px 14px; border-radius: 20px; margin-bottom: 1.5rem; letter-spacing: 0.05em; text-transform: uppercase; animation: fadeDown 0.6s ease both; }
+    .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(3rem, 8vw, 6rem); font-weight: 900; color: var(--white); line-height: 1.05; letter-spacing: -0.02em; animation: fadeDown 0.7s 0.1s ease both; }
+    .hero h1 span { color: var(--gold-light); }
+    .hero-sub { font-size: 1.15rem; color: rgba(255,255,255,0.75); margin: 1.25rem 0 2.5rem; font-weight: 300; animation: fadeDown 0.7s 0.2s ease both; }
+    .hero-sub strong { color: var(--green-200); font-weight: 500; }
+    .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; animation: fadeDown 0.7s 0.3s ease both; }
+    .btn-primary { background: var(--gold); color: var(--green-900); padding: 0.8rem 2rem; border-radius: 8px; font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: all 0.2s; }
+    .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+    .btn-outline { background: transparent; color: var(--white); padding: 0.8rem 2rem; border-radius: 8px; font-weight: 500; font-size: 0.95rem; text-decoration: none; transition: all 0.2s; border: 1.5px solid rgba(255,255,255,0.35); }
+    .btn-outline:hover { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+    .hero-stats { display: flex; gap: 3rem; margin-top: 4rem; animation: fadeDown 0.7s 0.4s ease both; }
+    .stat { text-align: center; }
+    .stat-num { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--white); font-weight: 700; }
+    .stat-label { font-size: 0.8rem; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 0.08em; }
+    .scroll-hint { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 6px; color: rgba(255,255,255,0.4); font-size: 0.75rem; letter-spacing: 0.1em; animation: bounce 2s infinite; }
+    .scroll-hint::after { content: ''; width: 1px; height: 40px; background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent); }
+    .announcement-bar { background: var(--green-50); border-bottom: 1px solid var(--border); padding: 0.85rem 2rem; text-align: center; }
+    .announcement-bar p { font-size: 0.875rem; color: var(--text-mid); }
+    .announcement-bar strong { color: var(--green-600); }
+    section { padding: 5rem 2rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .section-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green-400); margin-bottom: 0.5rem; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 700; color: var(--text-dark); line-height: 1.2; margin-bottom: 1rem; }
+    .section-desc { font-size: 1rem; color: var(--text-muted); max-width: 620px; line-height: 1.7; }
+    #subjects { background: var(--white); }
+    .subjects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+    .subject-card { border: 1px solid var(--border); border-radius: 16px; padding: 2rem; background: var(--off-white); transition: all 0.25s; position: relative; overflow: hidden; }
+    .subject-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--green-400), var(--green-300)); transform: scaleX(0); transition: transform 0.3s; transform-origin: left; }
+    .subject-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(10,46,26,0.1); border-color: var(--green-300); }
+    .subject-card:hover::before { transform: scaleX(1); }
+    .subject-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    .subject-card h3 { font-family: 'Playfair Display', serif; font-size: 1.35rem; margin-bottom: 0.5rem; }
+    .subject-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+    .subject-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 1.25rem; }
+    .tag { background: var(--green-50); color: var(--green-700); font-size: 0.75rem; font-weight: 600; padding: 3px 10px; border-radius: 20px; border: 1px solid var(--green-100); }
+    #notes { background: var(--off-white); }
+    .notes-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 2rem; margin-bottom: 1rem; }
+    .notes-tab { padding: 0.45rem 1rem; border-radius: 20px; font-size: 0.82rem; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); background: var(--white); color: var(--text-muted); transition: all 0.2s; }
+    .notes-tab.active, .notes-tab:hover { background: var(--green-600); color: #fff; border-color: var(--green-600); }
+    .notes-subject-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+    .notes-subject-tab { padding: 0.4rem 1.2rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); background: var(--white); color: var(--text-muted); transition: all 0.2s; }
+    .notes-subject-tab.active { background: var(--green-700); color: #fff; border-color: var(--green-700); }
+    .notes-grid { display: none; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1rem; }
+    .notes-grid.active { display: grid; }
+    .note-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem; display: flex; gap: 0.85rem; align-items: flex-start; transition: all 0.2s; }
+    .note-card:hover { box-shadow: 0 8px 24px rgba(10,46,26,0.08); border-color: var(--green-300); }
+    .note-icon { width: 38px; height: 38px; border-radius: 9px; background: var(--green-50); border: 1px solid var(--green-100); display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+    .note-title { font-size: 0.85rem; font-weight: 600; color: var(--text-dark); margin-bottom: 2px; line-height: 1.4; }
+    .note-meta { font-size: 0.75rem; color: var(--text-muted); }
+    .note-badge { display: inline-block; font-size: 0.68rem; font-weight: 600; padding: 2px 7px; border-radius: 4px; margin-top: 5px; }
+    .badge-math { background: #e8f7ed; color: #1a6639; }
+    .badge-sci { background: #fff8e6; color: #8a5a00; }
+    #campus { background: var(--white); }
+    .campus-coming-banner { background: linear-gradient(135deg, var(--green-800), var(--green-600)); border-radius: 14px; padding: 2rem; text-align: center; color: #fff; margin-top: 3rem; }
+    .campus-coming-banner h3 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .campus-coming-banner p { font-size: 0.9rem; color: rgba(255,255,255,0.75); max-width: 480px; margin: 0 auto; line-height: 1.6; }
+    .campus-steps { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem; }
+    .campus-step { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 0.75rem 1.25rem; font-size: 0.82rem; color: rgba(255,255,255,0.9); }
+    .campus-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.2rem; margin-top: 2rem; }
+    .campus-placeholder { border-radius: 14px; aspect-ratio: 4/3; background: linear-gradient(135deg, var(--green-50), var(--green-100)); border: 2px dashed var(--green-200); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; padding: 1.5rem; transition: all 0.2s; }
+    .campus-placeholder:hover { border-color: var(--green-400); background: var(--green-50); }
+    .cs-icon { font-size: 2rem; }
+    .cs-title { font-size: 0.85rem; font-weight: 600; color: var(--green-700); }
+    .cs-sub { font-size: 0.75rem; color: var(--text-muted); }
+    #videos { background: var(--off-white); }
+    .videos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+    .video-card { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; background: var(--white); transition: all 0.25s; }
+    .video-card:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(10,46,26,0.1); }
+    .video-thumb { height: 160px; background: linear-gradient(135deg, var(--green-800), var(--green-600)); display: flex; align-items: center; justify-content: center; position: relative; }
+    .play-btn { width: 52px; height: 52px; border-radius: 50%; background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.6); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; cursor: pointer; }
+    .video-label { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.45); color: #fff; font-size: 0.7rem; padding: 3px 8px; border-radius: 4px; }
+    .video-info { padding: 1rem 1.25rem; }
+    .video-title { font-size: 0.95rem; font-weight: 600; color: var(--text-dark); margin-bottom: 4px; }
+    .video-sub { font-size: 0.8rem; color: var(--text-muted); }
+    .video-embed-note { font-size: 0.75rem; color: var(--green-500); margin-top: 6px; font-style: italic; }
+    #quizzes { background: var(--white); }
+    .quiz-list { display: flex; flex-direction: column; gap: 2rem; margin-top: 3rem; }
+    .quiz-block { border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .quiz-header { background: linear-gradient(135deg, var(--green-800), var(--green-500)); padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .quiz-header-left { display: flex; align-items: center; gap: 12px; }
+    .quiz-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+    .quiz-title-text { color: #fff; font-weight: 600; font-size: 0.95rem; margin-bottom: 2px; }
+    .quiz-meta { color: rgba(255,255,255,0.6); font-size: 0.8rem; }
+    .quiz-open-btn { background: var(--gold); color: var(--green-900); font-size: 0.8rem; font-weight: 700; padding: 6px 14px; border-radius: 6px; text-decoration: none; white-space: nowrap; }
+    .quiz-open-btn:hover { background: var(--gold-light); }
+    .quiz-frame-wrap { width: 100%; background: #fff; }
+    .quiz-frame-wrap iframe { display: block; width: 100%; min-width: 100%; height: 640px; border: none; }
+    #assignments { background: var(--off-white); }
+    .assign-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 2rem; margin-bottom: 1.5rem; }
+    .assign-tab { padding: 0.45rem 1.1rem; border-radius: 20px; font-size: 0.82rem; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); background: var(--white); color: var(--text-muted); transition: all 0.2s; }
+    .assign-tab.active, .assign-tab:hover { background: var(--green-600); color: #fff; border-color: var(--green-600); }
+    .assign-list { display: none; flex-direction: column; gap: 1rem; }
+    .assign-list.active { display: flex; }
+    .assignment-row { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.4rem; display: flex; align-items: center; gap: 1.25rem; transition: all 0.2s; }
+    .assignment-row:hover { border-color: var(--green-300); box-shadow: 0 4px 16px rgba(10,46,26,0.06); }
+    .assign-num { width: 34px; height: 34px; border-radius: 8px; background: var(--green-50); border: 1px solid var(--green-100); display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; color: var(--green-600); flex-shrink: 0; }
+    .assign-info { flex: 1; }
+    .assign-title { font-size: 0.92rem; font-weight: 600; color: var(--text-dark); }
+    .assign-sub { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+    .assign-due { font-size: 0.75rem; font-weight: 600; padding: 4px 11px; border-radius: 20px; white-space: nowrap; }
+    .due-soon { background: #fff3e0; color: #b35a00; }
+    .due-upcoming { background: var(--green-50); color: var(--green-700); }
+    .due-open { background: #e3f2fd; color: #1a5276; }
+    #resources { background: var(--white); }
+    .resources-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; margin-top: 3rem; }
+    .resource-card { background: var(--off-white); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; text-decoration: none; color: inherit; transition: all 0.2s; display: block; }
+    .resource-card:hover { border-color: var(--green-400); background: var(--green-50); transform: translateY(-2px); }
+    .resource-icon { font-size: 1.75rem; margin-bottom: 0.75rem; }
+    .resource-name { font-size: 0.9rem; font-weight: 600; color: var(--text-dark); margin-bottom: 3px; }
+    .resource-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+    .resource-arrow { font-size: 0.8rem; color: var(--green-400); margin-top: 8px; font-weight: 600; }
+    #nep { background: var(--off-white); }
+    .nep-lang-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; margin-top: 2rem; }
+    .nep-lang-tab { padding: 0.5rem 1.5rem; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; border: 1.5px solid var(--border); background: var(--white); color: var(--text-muted); transition: all 0.2s; }
+    .nep-lang-tab.active { background: var(--green-700); color: #fff; border-color: var(--green-700); }
+    .nep-content { display: none; }
+    .nep-content.active { display: block; }
+    .nep-summary { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; margin-bottom: 2rem; }
+    .nep-summary h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--text-dark); margin-bottom: 1rem; }
+    .nep-summary p { font-size: 0.92rem; color: var(--text-muted); line-height: 1.85; margin-bottom: 0.85rem; }
+    .nep-points { list-style: none; padding: 0; margin: 1rem 0; }
+    .nep-points li { display: flex; gap: 10px; align-items: flex-start; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.6; }
+    .nep-points li::before { content: '✦'; color: var(--green-400); font-size: 0.7rem; margin-top: 4px; flex-shrink: 0; }
+    .nep-pdfs { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+    .nep-pdf-card { background: linear-gradient(135deg, var(--green-800), var(--green-600)); border-radius: 14px; padding: 1.5rem; text-decoration: none; display: flex; align-items: center; gap: 1rem; transition: all 0.2s; }
+    .nep-pdf-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(10,46,26,0.25); }
+    .nep-pdf-icon { font-size: 2rem; flex-shrink: 0; }
+    .nep-pdf-title { color: #fff; font-weight: 600; font-size: 0.92rem; margin-bottom: 3px; }
+    .nep-pdf-sub { color: rgba(255,255,255,0.65); font-size: 0.78rem; }
+    #feedback { background: var(--white); }
+    .feedback-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 3rem; align-items: start; }
+    .feedback-form { background: var(--off-white); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; }
+    .feedback-form h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 1.25rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-mid); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.65rem 0.9rem; border: 1.5px solid var(--border); border-radius: 8px; font-size: 0.88rem; font-family: 'DM Sans', sans-serif; background: var(--white); color: var(--text-dark); outline: none; transition: border 0.2s; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--green-400); }
+    .form-group textarea { height: 110px; resize: vertical; }
+    .stars { display: flex; gap: 6px; margin-top: 4px; }
+    .star { font-size: 1.5rem; cursor: pointer; color: #ccc; transition: color 0.15s; }
+    .star.selected { color: var(--gold); }
+    .submit-btn { width: 100%; padding: 0.8rem; background: var(--green-600); color: #fff; border: none; border-radius: 8px; font-size: 0.92rem; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif; margin-top: 0.5rem; }
+    .submit-btn:hover { background: var(--green-500); }
+    .feedback-reviews { display: flex; flex-direction: column; gap: 1rem; }
+    .feedback-reviews h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 0.25rem; }
+    .review-card { background: var(--off-white); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+    .review-top { display: flex; align-items: center; gap: 10px; margin-bottom: 0.6rem; }
+    .review-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--green-200); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; color: var(--green-800); }
+    .review-name { font-size: 0.88rem; font-weight: 600; }
+    .review-grade { font-size: 0.75rem; color: var(--text-muted); }
+    .review-stars { color: var(--gold); font-size: 0.85rem; margin-left: auto; }
+    .review-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+    .success-msg { display: none; background: var(--green-50); border: 1px solid var(--green-200); border-radius: 10px; padding: 1rem; text-align: center; color: var(--green-700); font-weight: 600; font-size: 0.9rem; margin-top: 1rem; }
+    #contact { background: var(--off-white); }
+    .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-top: 3rem; }
+    .contact-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 1.75rem; text-align: center; transition: all 0.2s; }
+    .contact-card:hover { border-color: var(--green-300); box-shadow: 0 8px 24px rgba(10,46,26,0.08); transform: translateY(-3px); }
+    .contact-icon { font-size: 2.25rem; margin-bottom: 0.75rem; }
+    .contact-type { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 0.4rem; }
+    .contact-value { font-size: 0.95rem; font-weight: 600; color: var(--text-dark); }
+    .contact-value a { color: var(--green-600); text-decoration: none; }
+    .contact-hours { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+    .contact-map { margin-top: 2.5rem; background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; }
+    .contact-map h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 0.5rem; }
+    .contact-map p { font-size: 0.875rem; color: var(--text-muted); line-height: 1.7; }
+    #about { background: var(--white); }
+    .about-inner { display: grid; grid-template-columns: 1fr 2fr; gap: 4rem; align-items: center; }
+    .about-avatar { width: 180px; height: 180px; border-radius: 50%; background: linear-gradient(135deg, var(--green-500), var(--green-300)); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 3.5rem; color: var(--white); font-weight: 900; border: 4px solid var(--green-100); box-shadow: 0 12px 40px rgba(26,102,57,0.25); }
+    .about-text p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.8; margin-bottom: 1rem; }
+    .about-details { display: flex; gap: 2rem; margin-top: 1.5rem; flex-wrap: wrap; }
+    .about-detail { display: flex; flex-direction: column; gap: 2px; }
+    .detail-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); }
+    .detail-value { font-size: 0.9rem; font-weight: 600; color: var(--text-dark); }
+    footer { background: var(--green-900); color: rgba(255,255,255,0.7); padding: 3rem 2rem 2rem; text-align: center; }
+    .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--white); margin-bottom: 0.5rem; }
+    .footer-logo span { color: var(--gold-light); }
+    footer p { font-size: 0.875rem; margin-bottom: 1.5rem; }
+    .footer-links { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2rem; }
+    .footer-links a { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.82rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--gold-light); }
+    .footer-bottom { font-size: 0.75rem; color: rgba(255,255,255,0.3); border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1.5rem; }
+    @keyframes fadeDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes bounce { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(6px); } }
+    @media (max-width: 768px) { nav { padding: 0 1rem; } .nav-links { display: none; } .hero-stats { gap: 1.5rem; } .about-inner { grid-template-columns: 1fr; text-align: center; } .about-avatar { margin: 0 auto; } .feedback-inner { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo">PM <span>Math</span></div>
+  <div class="nav-links">
+    <a href="#subjects" class="active">Subjects</a>
+    <a href="#notes">Notes</a>
+    <a href="#campus">Campus</a>
+    <a href="#videos">Videos</a>
+    <a href="#quizzes">Quizzes</a>
+    <a href="#assignments">Assignments</a>
+    <a href="#resources">Resources</a>
+    <a href="#nep">NEP 2020</a>
+    <a href="#feedback">Feedback</a>
+    <a href="#contact">Contact</a>
+    <a href="#about">About</a>
+  </div>
+</nav>
+<section class="hero">
+  <div class="hero-badge">📐 Mathematics & Science · Grade 6–12 · CBSE</div>
+  <h1>PM <span>Math</span></h1>
+  <p class="hero-sub">Your one-stop study portal by <strong>Saurav Mishra</strong><br>Notes · Videos · Assignments · Resources</p>
+  <div class="hero-cta">
+    <a href="#notes" class="btn-primary">📄 Get Notes</a>
+    <a href="#videos" class="btn-outline">▶ Watch Videos</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">2</div><div class="stat-label">Subjects</div></div>
+    <div class="stat"><div class="stat-num">6–12</div><div class="stat-label">Grade</div></div>
+    <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Resources</div></div>
+  </div>
+  <div class="scroll-hint">SCROLL</div>
+</section>
+<div class="announcement-bar">
+  <p>📢 <strong>Announcement:</strong> KVIANS AND DEAR STUDENTS REQUEST ACCEPTED.</p>
+</div>
+<section id="subjects">
+  <div class="container">
+    <div class="section-label">What We Cover</div>
+    <h2 class="section-title">Subjects</h2>
+    <p class="section-desc">Comprehensive CBSE study material for Mathematics and Science from Grade 6 to Grade 12.</p>
+    <div class="subjects-grid">
+      <div class="subject-card">
+        <div class="subject-icon">📐</div>
+        <h3>Mathematics</h3>
+        <p>Number Systems, Algebra, Geometry, Trigonometry, Calculus, Statistics and more — with solved examples and practice problems as per CBSE syllabus.</p>
+        <div class="subject-tags"><span class="tag">Algebra</span><span class="tag">Geometry</span><span class="tag">Trigonometry</span><span class="tag">Calculus</span><span class="tag">Statistics</span></div>
+      </div>
+      <div class="subject-card">
+        <div class="subject-icon">🔬</div>
+        <h3>Science</h3>
+        <p>Physics, Chemistry and Biology — theory, diagrams, formulas and experiment summaries as per CBSE curriculum from Class 6 to 12.</p>
+        <div class="subject-tags"><span class="tag">Physics</span><span class="tag">Chemistry</span><span class="tag">Biology</span><span class="tag">Diagrams</span><span class="tag">Formulas</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="notes">
+  <div class="container">
+    <div class="section-label">CBSE Study Material</div>
+    <h2 class="section-title">Notes & PDFs</h2>
+    <p class="section-desc">Chapter-wise notes for all classes as per CBSE syllabus. Select your class and subject below.</p>
+    <div class="notes-tabs">
+      <div class="notes-tab active" onclick="switchClass('6')">Class 6</div>
+      <div class="notes-tab" onclick="switchClass('7')">Class 7</div>
+      <div class="notes-tab" onclick="switchClass('8')">Class 8</div>
+      <div class="notes-tab" onclick="switchClass('9')">Class 9</div>
+      <div class="notes-tab" onclick="switchClass('10')">Class 10</div>
+      <div class="notes-tab" onclick="switchClass('11')">Class 11</div>
+      <div class="notes-tab" onclick="switchClass('12')">Class 12</div>
+    </div>
+    <div class="notes-subject-tabs">
+      <div class="notes-subject-tab active" id="subj-math" onclick="switchSubject('math')">📐 Mathematics</div>
+      <div class="notes-subject-tab" id="subj-sci" onclick="switchSubject('sci')">🔬 Science</div>
+    </div>
+    <!-- CLASS 6 -->
+    <div class="notes-grid active" id="notes-6-math">
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 1 – Pattern in Mathematics</div><div class="note-meta">Maths · Class 6</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 2 – Lines and Angles</div><div class="note-meta">Maths · Class 6</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 3 – Number Play</div><div class="note-meta">Maths · Class 6</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 4 – Data Handling and Presentation</div><div class="note-meta">Maths · Class 6</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 5 – Prime Time</div><div class="note-meta">Maths · Class 6</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 6 – Perimeter and Area</div><div class="note-meta">Maths · Class 6</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 7 – Fractions</div><div class="note-meta">Maths · Class 6</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 8 – Playing With Constructions</div><div class="note-meta">Maths · Class 6</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 9 – Symmetry</div><div class="note-meta">Maths · Class 6</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 10 – The Other Side of Zero</div><div class="note-meta">Maths · Class 6</div><span class="note-badge badge-math">Maths</span></div></div>
+    </div>
+    <div class="notes-grid" id="notes-6-sci">
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 1 – Food: Where Does It Come From?</div><div class="note-meta">Science · Class 6</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 2 – Components of Food</div><div class="note-meta">Science · Class 6</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 3 – Fibre to Fabric</div><div class="note-meta">Science · Class 6</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 4 – Sorting Materials into Groups</div><div class="note-meta">Science · Class 6</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 5 – Separation of Substances</div><div class="note-meta">Science · Class 6</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 6 – Changes Around Us</div><div class="note-meta">Science · Class 6</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 7 – Getting to Know Plants</div><div class="note-meta">Science · Class 6</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 8 – Body Movements</div><div class="note-meta">Science · Class 6</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 9 – The Living Organisms & Their Surroundings</div><div class="note-meta">Science · Class 6</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 10 – Motion and Measurement of Distances</div><div class="note-meta">Science · Class 6</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 11 – Light, Shadows and Reflections</div><div class="note-meta">Science · Class 6</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 12 – Electricity and Circuits</div><div class="note-meta">Science · Class 6</div><span class="note-badge badge-sci">Science</span></div></div>
+    </div>
+    <!-- CLASS 7 -->
+    <div class="notes-grid" id="notes-7-math">
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 1 – Large Number Around Us</div><div class="note-meta">Maths · Class 7</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 2 – Arithmetic Expressions</div><div class="note-meta">Maths · Class 7</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 3 – A Peek Beyond The Point</div><div class="note-meta">Maths · Class 7</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 4 – Expressions Using Letter-Numbers</div><div class="note-meta">Maths · Class 7</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 5 – Parallel and Intersecting Lines</div><div class="note-meta">Maths · Class 7</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 6 – Number Play</div><div class="note-meta">Maths · Class 7</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 7 – A Tale of Three Intersecting Lines</div><div class="note-meta">Maths · Class 7</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 8 – Working With Fractions</div><div class="note-meta">Maths · Class 7</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 9 – Geometric Twins</div><div class="note-meta">Maths · Class 7</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 10 – Operations With Integers</div><div class="note-meta">Maths · Class 7</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 11 – Finding Common Ground</div><div class="note-meta">Maths · Class 7</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 12 – Another Peek Beyond The Point</div><div class="note-meta">Maths · Class 7</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 13 – Connecting The Dots</div><div class="note-meta">Maths · Class 7</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 14 – Constructions and Tilings</div><div class="note-meta">Maths · Class 7</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 15 – Finding The Unknown</div><div class="note-meta">Maths · Class 7</div><span class="note-badge badge-math">Maths</span></div></div>
+    </div>
+    <div class="notes-grid" id="notes-7-sci">
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 1 – The Ever-Evolving World of Science</div><div class="note-meta">Science · Class 7</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 2 – Exploring Substances: Acidic, Basic, and Neutral</div><div class="note-meta">Science · Class 7</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 3 – Electricity: Circuits and Their Components</div><div class="note-meta">Science · Class 7</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 4 – The World of Metals and Non-metals</div><div class="note-meta">Science · Class 7</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 5 – Changes Around Us: Physical and Chemical</div><div class="note-meta">Science · Class 7</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 6 – Adolescence: A Stage of Growth and Change</div><div class="note-meta">Science · Class 7</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 7 – Heat Transfer in Nature</div><div class="note-meta">Science · Class 7</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 8 – Measurement of Time and Motion</div><div class="note-meta">Science · Class 7</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 9 – Life Processes in Animals</div><div class="note-meta">Science · Class 7</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 10 – Life Processes in Plants</div><div class="note-meta">Science · Class 7</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 11 – Light: Shadows and Reflections</div><div class="note-meta">Science · Class 7</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 12 – Earth, Moon, and the Sun</div><div class="note-meta">Science · Class 7</div><span class="note-badge badge-sci">Science</span></div></div>
+    </div>
+    <!-- CLASS 8 -->
+    <div class="notes-grid" id="notes-8-math">
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 1 – A Square and A Cube</div><div class="note-meta">Maths · Class 8</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 2 – Power Play</div><div class="note-meta">Maths · Class 8</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 3 – A Story of Numbers</div><div class="note-meta">Maths · Class 8</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 4 – Quadrilaterals</div><div class="note-meta">Maths · Class 8</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 5 – Number Play</div><div class="note-meta">Maths · Class 8</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 6 – We Distribute, Yet Things Multiply</div><div class="note-meta">Maths · Class 8</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 7 – Proportional Reasoning-1</div><div class="note-meta">Maths · Class 8</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 8 – Fractions in Disguise</div><div class="note-meta">Maths · Class 8</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 9 – The Baudhayana-Pythagoras Theorem</div><div class="note-meta">Maths · Class 8</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 10 – Proportional Reasoning-2</div><div class="note-meta">Maths · Class 8</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 11 – Exploring Some Geometric Themes</div><div class="note-meta">Maths · Class 8</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 12 – Tales By Dots and Lines</div><div class="note-meta">Maths · Class 8</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 13 – Algebra Play</div><div class="note-meta">Maths · Class 8</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 14 – Area</div><div class="note-meta">Maths · Class 8</div><span class="note-badge badge-math">Maths</span></div></div>
+    </div>
+    <div class="notes-grid" id="notes-8-sci">
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 1 – Exploring the Investigative World of Science</div><div class="note-meta">Science · Class 8</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 2 – The Invisible Living World: Beyond Our Naked Eye</div><div class="note-meta">Science · Class 8</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 3 – Health: The Ultimate Treasure</div><div class="note-meta">Science · Class 8</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 4 – Electricity: Magnetic and Heating Effects</div><div class="note-meta">Science · Class 8</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 5 – Exploring Forces</div><div class="note-meta">Science · Class 8</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 6 – Pressure, Winds, Storms, and Cyclones</div><div class="note-meta">Science · Class 8</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 7 – Particulate Nature of Matter</div><div class="note-meta">Science · Class 8</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 8 – Nature of Matter: Elements, Compounds, and Mixtures</div><div class="note-meta">Science · Class 8</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 9 – The Amazing World Of Solutes, Solvents, and Solutions</div><div class="note-meta">Science · Class 8</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 10 – Light: Mirrors and Lenses</div><div class="note-meta">Science · Class 8</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 11 – Keeping Time With the Skies</div><div class="note-meta">Science · Class 8</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 12 – How Nature Works in Harmony</div><div class="note-meta">Science · Class 8</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 13 – Our Home: Earth, a Unique Life Sustaining Planet</div><div class="note-meta">Science · Class 8</div><span class="note-badge badge-sci">Science</span></div></div>
+    </div>
+    <!-- CLASS 9 -->
+    <div class="notes-grid" id="notes-9-math">
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 1 – Orienting Yourself: The Use of Coordinates</div><div class="note-meta">Maths · Class 9</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 2 – Introduction To Linear Polynomials</div><div class="note-meta">Maths · Class 9</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 3 – The World of Numbers</div><div class="note-meta">Maths · Class 9</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 4 – Exploring Algebraic Identities</div><div class="note-meta">Maths · Class 9</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 5 – I'm Up and Down, and Round and Round</div><div class="note-meta">Maths · Class 9</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 6 – Measuring Spaces: Perimeter and Area</div><div class="note-meta">Maths · Class 9</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 7 – The Mathematics of Maybe: Introduction to Probability</div><div class="note-meta">Maths · Class 9</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 8 – Predicting What Comes Next: Exploring Sequences and Progressions</div><div class="note-meta">Maths · Class 9</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 9 – Ganita Manjari Part 2 Waiting</div><div class="note-meta">Maths · Class 9</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 10 – Ganita Manjari Part 2 Waiting</div><div class="note-meta">Maths · Class 9</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 11 – Ganita Manjari Part 2 Waiting</div><div class="note-meta">Maths · Class 9</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 12 – Ganita Manjari Part 2 Waiting</div><div class="note-meta">Maths · Class 9</div><span class="note-badge badge-math">Maths</span></div></div>
+    </div>
+    <div class="notes-grid" id="notes-9-sci">
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 1 – Exploration: Entering the World of Secondary Science</div><div class="note-meta">Science · Class 9</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 2 – Cell: The Building Block of Life</div><div class="note-meta">Science · Class 9</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 3 – Tissues in Action</div><div class="note-meta">Science · Class 9</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 4 – Describing Motion Around Us</div><div class="note-meta">Science · Class 9</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 5 – Exploring Mixtures and their Separation</div><div class="note-meta">Science · Class 9</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 6 – How Forces Affect Motion</div><div class="note-meta">Science · Class 9</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 7 – Work, Energy, and Simple Machines</div><div class="note-meta">Science · Class 9</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 8 – Journey Inside the Atom</div><div class="note-meta">Science · Class 9</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 9 – Atomic Foundations of Matter</div><div class="note-meta">Science · Class 9</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 10 – Sound Waves: Characteristics and Applications</div><div class="note-meta">Science · Class 9</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 11 – Reproduction: How Life Continues</div><div class="note-meta">Science · Class 9</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 12 – Patterns in Life: Diversity and Classification</div><div class="note-meta">Science · Class 9</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 13 – Earth as a System: Energy, Matter, and Life</div><div class="note-meta">Science · Class 9</div><span class="note-badge badge-sci">Science</span></div></div>
+    </div>
+    <!-- CLASS 10 -->
+    <div class="notes-grid" id="notes-10-math">
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 1 – Real Numbers</div><div class="note-meta">Maths · Class 10</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 2 – Polynomials</div><div class="note-meta">Maths · Class 10</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 3 – Pair of Linear Equations in Two Variables</div><div class="note-meta">Maths · Class 10</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 4 – Quadratic Equations</div><div class="note-meta">Maths · Class 10</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 5 – Arithmetic Progressions</div><div class="note-meta">Maths · Class 10</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 6 – Triangles</div><div class="note-meta">Maths · Class 10</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 7 – Coordinate Geometry</div><div class="note-meta">Maths · Class 10</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 8 – Introduction to Trigonometry</div><div class="note-meta">Maths · Class 10</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 9 – Some Applications of Trigonometry</div><div class="note-meta">Maths · Class 10</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 10 – Circles</div><div class="note-meta">Maths · Class 10</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 11 – Areas Related to Circles</div><div class="note-meta">Maths · Class 10</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 12 – Surface Areas and Volumes</div><div class="note-meta">Maths · Class 10</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 13 – Statistics</div><div class="note-meta">Maths · Class 10</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 14 – Probability</div><div class="note-meta">Maths · Class 10</div><span class="note-badge badge-math">Maths</span></div></div>
+    </div>
+    <div class="notes-grid" id="notes-10-sci">
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 1 – Chemical Reactions and Equations</div><div class="note-meta">Science · Class 10</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 2 – Acids, Bases and Salts</div><div class="note-meta">Science · Class 10</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 3 – Metals and Non-metals</div><div class="note-meta">Science · Class 10</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 4 – Carbon and Its Compounds</div><div class="note-meta">Science · Class 10</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 5 – Life Processes</div><div class="note-meta">Science · Class 10</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 6 – Control and Coordination</div><div class="note-meta">Science · Class 10</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 7 – How Do Organisms Reproduce?</div><div class="note-meta">Science · Class 10</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 8 – Heredity</div><div class="note-meta">Science · Class 10</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 9 – Light: Reflection and Refraction</div><div class="note-meta">Science · Class 10</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 10 – The Human Eye and the Colourful World</div><div class="note-meta">Science · Class 10</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 11 – Electricity</div><div class="note-meta">Science · Class 10</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 12 – Magnetic Effects of Electric Current</div><div class="note-meta">Science · Class 10</div><span class="note-badge badge-sci">Science</span></div></div>
+      <div class="note-card"><div class="note-icon">🔬</div><div><div class="note-title">Ch 13 – Our Environment</div><div class="note-meta">Science · Class 10</div><span class="note-badge badge-sci">Science</span></div></div>
+    </div>
+    <!-- CLASS 11 -->
+    <div class="notes-grid" id="notes-11-math">
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 1 – Sets</div><div class="note-meta">Maths · Class 11</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 2 – Relations and Functions</div><div class="note-meta">Maths · Class 11</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 3 – Trigonometric Functions</div><div class="note-meta">Maths · Class 11</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 4 – Complex Numbers and Quadratic Equations</div><div class="note-meta">Maths · Class 11</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 5 – Linear Inequalities</div><div class="note-meta">Maths · Class 11</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 6 – Permutations and Combinations</div><div class="note-meta">Maths · Class 11</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 7 – Binomial Theorem</div><div class="note-meta">Maths · Class 11</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 8 – Sequences and Series</div><div class="note-meta">Maths · Class 11</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 9 – Straight Lines</div><div class="note-meta">Maths · Class 11</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 10 – Conic Sections</div><div class="note-meta">Maths · Class 11</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 11 – Introduction to 3D Geometry</div><div class="note-meta">Maths · Class 11</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 12 – Limits and Derivatives</div><div class="note-meta">Maths · Class 11</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 13 – Statistics</div><div class="note-meta">Maths · Class 11</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 14 – Probability</div><div class="note-meta">Maths · Class 11</div><span class="note-badge badge-math">Maths</span></div></div>
+    </div>
+
+    <!-- CLASS 12 -->
+    <div class="notes-grid" id="notes-12-math">
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 1 – Relations and Functions</div><div class="note-meta">Maths · Class 12</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 2 – Inverse Trigonometric Functions</div><div class="note-meta">Maths · Class 12</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 3 – Matrices</div><div class="note-meta">Maths · Class 12</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 4 – Determinants</div><div class="note-meta">Maths · Class 12</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 5 – Continuity and Differentiability</div><div class="note-meta">Maths · Class 12</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 6 – Application of Derivatives</div><div class="note-meta">Maths · Class 12</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 7 – Integrals</div><div class="note-meta">Maths · Class 12</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 8 – Application of Integrals</div><div class="note-meta">Maths · Class 12</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 9 – Differential Equations</div><div class="note-meta">Maths · Class 12</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 10 – Vector Algebra</div><div class="note-meta">Maths · Class 12</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 11 – Three Dimensional Geometry</div><div class="note-meta">Maths · Class 12</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 12 – Linear Programming</div><div class="note-meta">Maths · Class 12</div><span class="note-badge badge-math">Maths</span></div></div>
+      <div class="note-card"><div class="note-icon">📄</div><div><div class="note-title">Ch 13 – Probability</div><div class="note-meta">Maths · Class 12</div><span class="note-badge badge-math">Maths</span></div></div>
+    </div>
+
+  </div>
+</section>
+<section id="campus">
+  <div class="container">
+    <div class="section-label">Our Space</div>
+    <h2 class="section-title">Classroom & Campus</h2>
+    <p class="section-desc">A glimpse into our learning environment. Real photos and videos coming soon!</p>
+    <div class="campus-coming-banner">
+      <h3>📸 Our Classroom & Campus</h3>
+      <p>A glimpse into our learning space! More photos and videos will be added soon. Replace the remaining placeholders with your own images anytime.</p>
+      <div class="campus-steps">
+        <div class="campus-step">📷 Classroom Photos</div>
+        <div class="campus-step">🏫 Campus Tour</div>
+        <div class="campus-step">🎬 Teaching Videos</div>
+        <div class="campus-step">🎉 Events & Activities</div>
+      </div>
+    </div>
+    <div class="campus-grid">
+      <div style="border-radius:14px;overflow:hidden;aspect-ratio:4/3;border:1px solid rgba(26,102,57,0.15);box-shadow:0 4px 16px rgba(10,46,26,0.1);">
+  <img src="classroom.jpg.jpeg" alt="Our Classroom" style="width:100%;height:100%;object-fit:cover;display:block;">
+</div>
+      <div style="border-radius:14px;overflow:hidden;aspect-ratio:4/3;border:1px solid rgba(26,102,57,0.15);box-shadow:0 4px 16px rgba(10,46,26,0.1);">
+  <img src="classroom1.jpg.jpeg" alt="Campus Tour" style="width:100%;height:100%;object-fit:cover;display:block;">
+</div>
+      <div class="campus-placeholder"><div class="cs-icon">🔬</div><div class="cs-title">Science Lab</div><div class="cs-sub">Coming Soon</div></div>
+      <div class="campus-placeholder"><div class="cs-icon">📐</div><div class="cs-title">Maths Board</div><div class="cs-sub">Coming Soon</div></div>
+      <div class="campus-placeholder"><div class="cs-icon">🎬</div><div class="cs-title">Video Lesson</div><div class="cs-sub">Coming Soon</div></div>
+      <div style="border-radius:14px;overflow:hidden;aspect-ratio:4/3;border:1px solid rgba(26,102,57,0.15);box-shadow:0 4px 16px rgba(10,46,26,0.1);">
+        <img src="STUDENT ACHIEVEMENTS.jpeg" alt="Student Achievements" style="width:100%;height:100%;object-fit:cover;display:block;">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="videos">
+  <div class="container">
+    <div class="section-label">Video Lessons</div>
+    <h2 class="section-title">Watch & Learn</h2>
+    <p class="section-desc">YouTube videos organized by topic. Paste your YouTube links to activate each card.</p>
+    <div class="videos-grid">
+      <div class="video-card"><div class="video-thumb"><div class="play-btn">▶</div><div class="video-label">Mathematics</div></div><div class="video-info"><div class="video-title">Introduction to Quadratic Equations</div><div class="video-sub">Class 10 · Chapter 4</div><div class="video-embed-note">📌 Paste your YouTube link here</div></div></div>
+      <div class="video-card"><div class="video-thumb" style="background:linear-gradient(135deg,#0a2e40,#0f5a5a);"><div class="play-btn">▶</div><div class="video-label">Science</div></div><div class="video-info"><div class="video-title">Atoms & Molecules Explained</div><div class="video-sub">Class 9 · Chapter 3</div><div class="video-embed-note">📌 Paste your YouTube link here</div></div></div>
+      <div class="video-card"><div class="video-thumb" style="background:linear-gradient(135deg,#2e1a0a,#7a4a10);"><div class="play-btn">▶</div><div class="video-label">Mathematics</div></div><div class="video-info"><div class="video-title">Trigonometry — sin, cos, tan</div><div class="video-sub">Class 10 · Chapter 8</div><div class="video-embed-note">📌 Paste your YouTube link here</div></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="quizzes">
+  <div class="container">
+    <div class="section-label">Test Yourself</div>
+    <h2 class="section-title">Online Quizzes</h2>
+    <p class="section-desc">Select a quiz, answer all questions and submit — see your result instantly! No login needed.</p>
+
+    <style>
+      .quiz-selector { display:flex; gap:0.75rem; flex-wrap:wrap; margin:2rem 0 1.5rem; }
+      .quiz-sel-btn { padding:0.5rem 1.25rem; border-radius:20px; font-size:0.85rem; font-weight:600; cursor:pointer; border:1.5px solid var(--border); background:var(--white); color:var(--text-muted); transition:all 0.2s; font-family:'DM Sans',sans-serif; }
+      .quiz-sel-btn.active { background:var(--green-600); color:#fff; border-color:var(--green-600); }
+      .quiz-panel { display:none; }
+      .quiz-panel.active { display:block; }
+      .quiz-box { background:var(--white); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+      .quiz-top { background:linear-gradient(135deg,var(--green-800),var(--green-500)); padding:1.25rem 1.75rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; }
+      .quiz-top-title { color:#fff; font-weight:700; font-size:1rem; }
+      .quiz-top-meta { color:rgba(255,255,255,0.7); font-size:0.82rem; margin-top:3px; }
+      .quiz-badge { background:var(--gold); color:var(--green-900); font-size:0.78rem; font-weight:700; padding:5px 14px; border-radius:20px; }
+      .quiz-body { padding:1.75rem; }
+      .q-item { margin-bottom:1.75rem; padding-bottom:1.75rem; border-bottom:1px solid var(--border); }
+      .q-item:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
+      .q-num { font-size:0.72rem; font-weight:700; color:var(--green-500); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.4rem; }
+      .q-text { font-size:0.95rem; font-weight:600; color:var(--text-dark); margin-bottom:1rem; line-height:1.5; }
+      .q-options { display:flex; flex-direction:column; gap:0.6rem; }
+      .q-opt { display:flex; align-items:center; gap:0.75rem; padding:0.65rem 1rem; border:1.5px solid var(--border); border-radius:10px; cursor:pointer; transition:all 0.15s; font-size:0.88rem; color:var(--text-dark); }
+      .q-opt:hover { border-color:var(--green-400); background:var(--green-50); }
+      .q-opt input[type=radio] { accent-color:var(--green-600); width:16px; height:16px; flex-shrink:0; }
+      .q-opt.correct { background:#e8f7ed; border-color:var(--green-400); color:var(--green-800); font-weight:600; }
+      .q-opt.wrong { background:#fdecea; border-color:#e53935; color:#b71c1c; }
+      .quiz-submit { width:100%; padding:0.9rem; background:var(--green-600); color:#fff; border:none; border-radius:10px; font-size:0.95rem; font-weight:700; cursor:pointer; transition:all 0.2s; font-family:'DM Sans',sans-serif; margin-top:1.5rem; }
+      .quiz-submit:hover { background:var(--green-500); transform:translateY(-1px); }
+      .quiz-result { display:none; margin-top:1.5rem; border-radius:14px; padding:1.5rem; text-align:center; }
+      .quiz-result.show { display:block; }
+      .result-score { font-family:'Playfair Display',serif; font-size:3rem; font-weight:700; }
+      .result-msg { font-size:1rem; margin-top:0.5rem; font-weight:500; }
+      .result-detail { font-size:0.85rem; margin-top:0.5rem; color:var(--text-muted); }
+      .quiz-retry { background:var(--white); color:var(--green-700); border:1.5px solid var(--green-400); padding:0.65rem 2rem; border-radius:8px; font-size:0.88rem; font-weight:600; cursor:pointer; margin-top:1rem; font-family:'DM Sans',sans-serif; transition:all 0.2s; }
+      .quiz-retry:hover { background:var(--green-50); }
+    </style>
+
+    <div class="quiz-selector">
+      <button class="quiz-sel-btn active" onclick="showQuiz('q1',this)">📝 Polynomials – Class 10</button>
+      <button class="quiz-sel-btn" onclick="showQuiz('q2',this)">🔬 Atoms & Molecules – Class 9</button>
+    </div>
+
+    <!-- QUIZ 1: Polynomials Class 10 -->
+    <div class="quiz-panel active" id="panel-q1">
+      <div class="quiz-box">
+        <div class="quiz-top">
+          <div><div class="quiz-top-title">Polynomials — Class 10 Maths</div><div class="quiz-top-meta">Chapter 2 · 10 Questions · Instant Result</div></div>
+          <span class="quiz-badge">MCQ Quiz</span>
+        </div>
+        <div class="quiz-body">
+          <div id="q1-questions">
+
+            <div class="q-item">
+              <div class="q-num">Question 1 of 10</div>
+              <div class="q-text">Which of the following is a polynomial?</div>
+              <div class="q-options">
+                <label class="q-opt"><input type="radio" name="q1_1" value="0"> x² + 2x + 1/x</label>
+                <label class="q-opt"><input type="radio" name="q1_1" value="1"> x² + 3x + 2</label>
+                <label class="q-opt"><input type="radio" name="q1_1" value="0"> √x + 1</label>
+                <label class="q-opt"><input type="radio" name="q1_1" value="0"> x⁻¹ + 5</label>
+              </div>
+            </div>
+
+            <div class="q-item">
+              <div class="q-num">Question 2 of 10</div>
+              <div class="q-text">The degree of the polynomial 4x³ − 3x² + 2x − 7 is:</div>
+              <div class="q-options">
+                <label class="q-opt"><input type="radio" name="q1_2" value="0"> 2</label>
+                <label class="q-opt"><input type="radio" name="q1_2" value="0"> 1</label>
+                <label class="q-opt"><input type="radio" name="q1_2" value="1"> 3</label>
+                <label class="q-opt"><input type="radio" name="q1_2" value="0"> 4</label>
+              </div>
+            </div>
+
+            <div class="q-item">
+              <div class="q-num">Question 3 of 10</div>
+              <div class="q-text">The zeroes of the polynomial p(x) = x² − 5x + 6 are:</div>
+              <div class="q-options">
+                <label class="q-opt"><input type="radio" name="q1_3" value="0"> 2 and 4</label>
+                <label class="q-opt"><input type="radio" name="q1_3" value="1"> 2 and 3</label>
+                <label class="q-opt"><input type="radio" name="q1_3" value="0"> 1 and 6</label>
+                <label class="q-opt"><input type="radio" name="q1_3" value="0"> 3 and 4</label>
+              </div>
+            </div>
+
+            <div class="q-item">
+              <div class="q-num">Question 4 of 10</div>
+              <div class="q-text">If α and β are zeroes of x² − 4x + 3, then α + β = ?</div>
+              <div class="q-options">
+                <label class="q-opt"><input type="radio" name="q1_4" value="0"> 3</label>
+                <label class="q-opt"><input type="radio" name="q1_4" value="1"> 4</label>
+                <label class="q-opt"><input type="radio" name="q1_4" value="0"> −4</label>
+                <label class="q-opt"><input type="radio" name="q1_4" value="0"> −3</label>
+              </div>
+            </div>
+
+            <div class="q-item">
+              <div class="q-num">Question 5 of 10</div>
+              <div class="q-text">If α and β are zeroes of x² − 4x + 3, then α × β = ?</div>
+              <div class="q-options">
+                <label class="q-opt"><input type="radio" name="q1_5" value="0"> 4</label>
+                <label class="q-opt"><input type="radio" name="q1_5" value="0"> −4</label>
+                <label class="q-opt"><input type="radio" name="q1_5" value="1"> 3</label>
+                <label class="q-opt"><input type="radio" name="q1_5" value="0"> −3</label>
+              </div>
+            </div>
+
+            <div class="q-item">
+              <div class="q-num">Question 6 of 10</div>
+              <div class="q-text">A quadratic polynomial with zeroes 3 and −2 is:</div>
+              <div class="q-options">
+                <label class="q-opt"><input type="radio" name="q1_6" value="0"> x² + x − 6</label>
+                <label class="q-opt"><input type="radio" name="q1_6" value="1"> x² − x − 6</label>
+                <label class="q-opt"><input type="radio" name="q1_6" value="0"> x² + x + 6</label>
+                <label class="q-opt"><input type="radio" name="q1_6" value="0"> x² − x + 6</label>
+              </div>
+            </div>
+
+            <div class="q-item">
+              <div class="q-num">Question 7 of 10</div>
+              <div class="q-text">The number of zeroes a cubic polynomial can have is at most:</div>
+              <div class="q-options">
+                <label class="q-opt"><input type="radio" name="q1_7" value="0"> 1</label>
+                <label class="q-opt"><input type="radio" name="q1_7" value="0"> 2</label>
+                <label class="q-opt"><input type="radio" name="q1_7" value="1"> 3</label>
+                <label class="q-opt"><input type="radio" name="q1_7" value="0"> 4</label>
+              </div>
+            </div>
+
+            <div class="q-item">
+              <div class="q-num">Question 8 of 10</div>
+              <div class="q-text">On dividing x³ − 3x² + 3x − 5 by (x − 1), the remainder is:</div>
+              <div class="q-options">
+                <label class="q-opt"><input type="radio" name="q1_8" value="0"> 0</label>
+                <label class="q-opt"><input type="radio" name="q1_8" value="0"> 1</label>
+                <label class="q-opt"><input type="radio" name="q1_8" value="1"> −4</label>
+                <label class="q-opt"><input type="radio" name="q1_8" value="0"> 4</label>
+              </div>
+            </div>
+
+            <div class="q-item">
+              <div class="q-num">Question 9 of 10</div>
+              <div class="q-text">If one zero of 2x² + kx − 4 is 2, then the value of k is:</div>
+              <div class="q-options">
+                <label class="q-opt"><input type="radio" name="q1_9" value="0"> 2</label>
+                <label class="q-opt"><input type="radio" name="q1_9" value="1"> −2</label>
+                <label class="q-opt"><input type="radio" name="q1_9" value="0"> 4</label>
+                <label class="q-opt"><input type="radio" name="q1_9" value="0"> −4</label>
+              </div>
+            </div>
+
+            <div class="q-item">
+              <div class="q-num">Question 10 of 10</div>
+              <div class="q-text">A polynomial of degree 2 is called a:</div>
+              <div class="q-options">
+                <label class="q-opt"><input type="radio" name="q1_10" value="0"> Linear polynomial</label>
+                <label class="q-opt"><input type="radio" name="q1_10" value="1"> Quadratic polynomial</label>
+                <label class="q-opt"><input type="radio" name="q1_10" value="0"> Cubic polynomial</label>
+                <label class="q-opt"><input type="radio" name="q1_10" value="0"> Constant polynomial</label>
+              </div>
+            </div>
+
+          </div>
+          <button class="quiz-submit" onclick="submitQuiz('q1',10)">Submit Quiz ✓</button>
+          <div class="quiz-result" id="result-q1"></div>
+          <button class="quiz-retry" id="retry-q1" onclick="retryQuiz('q1')" style="display:none;">🔄 Try Again</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUIZ 2: Atoms & Molecules Class 9 -->
+    <div class="quiz-panel" id="panel-q2">
+      <div class="quiz-box">
+        <div class="quiz-top" style="background:linear-gradient(135deg,#0a2e40,#0f6b6b);">
+          <div><div class="quiz-top-title">Atoms & Molecules — Class 9 Science</div><div class="quiz-top-meta">Chapter 3 · 5 Questions · Instant Result</div></div>
+          <span class="quiz-badge">MCQ Quiz</span>
+        </div>
+        <div class="quiz-body">
+          <div id="q2-questions">
+
+            <div class="q-item">
+              <div class="q-num">Question 1 of 5</div>
+              <div class="q-text">The smallest particle of an element that retains its chemical properties is called a:</div>
+              <div class="q-options">
+                <label class="q-opt"><input type="radio" name="q2_1" value="0"> Molecule</label>
+                <label class="q-opt"><input type="radio" name="q2_1" value="1"> Atom</label>
+                <label class="q-opt"><input type="radio" name="q2_1" value="0"> Ion</label>
+                <label class="q-opt"><input type="radio" name="q2_1" value="0"> Electron</label>
+              </div>
+            </div>
+
+            <div class="q-item">
+              <div class="q-num">Question 2 of 5</div>
+              <div class="q-text">The chemical formula of water is:</div>
+              <div class="q-options">
+                <label class="q-opt"><input type="radio" name="q2_2" value="0"> HO</label>
+                <label class="q-opt"><input type="radio" name="q2_2" value="1"> H₂O</label>
+                <label class="q-opt"><input type="radio" name="q2_2" value="0"> H₂O₂</label>
+                <label class="q-opt"><input type="radio" name="q2_2" value="0"> OH₂</label>
+              </div>
+            </div>
+
+            <div class="q-item">
+              <div class="q-num">Question 3 of 5</div>
+              <div class="q-text">Atomic mass of oxygen is:</div>
+              <div class="q-options">
+                <label class="q-opt"><input type="radio" name="q2_3" value="0"> 12 u</label>
+                <label class="q-opt"><input type="radio" name="q2_3" value="0"> 14 u</label>
+                <label class="q-opt"><input type="radio" name="q2_3" value="1"> 16 u</label>
+                <label class="q-opt"><input type="radio" name="q2_3" value="0"> 32 u</label>
+              </div>
+            </div>
+
+            <div class="q-item">
+              <div class="q-num">Question 4 of 5</div>
+              <div class="q-text">One mole of any substance contains how many particles?</div>
+              <div class="q-options">
+                <label class="q-opt"><input type="radio" name="q2_4" value="0"> 6.022 × 10²¹</label>
+                <label class="q-opt"><input type="radio" name="q2_4" value="1"> 6.022 × 10²³</label>
+                <label class="q-opt"><input type="radio" name="q2_4" value="0"> 6.022 × 10²⁴</label>
+                <label class="q-opt"><input type="radio" name="q2_4" value="0"> 6.022 × 10²²</label>
+              </div>
+            </div>
+
+            <div class="q-item">
+              <div class="q-num">Question 5 of 5</div>
+              <div class="q-text">The law of conservation of mass states that:</div>
+              <div class="q-options">
+                <label class="q-opt"><input type="radio" name="q2_5" value="1"> Mass is neither created nor destroyed in a chemical reaction</label>
+                <label class="q-opt"><input type="radio" name="q2_5" value="0"> Mass increases during a reaction</label>
+                <label class="q-opt"><input type="radio" name="q2_5" value="0"> Mass decreases during a reaction</label>
+                <label class="q-opt"><input type="radio" name="q2_5" value="0"> Mass changes with temperature</label>
+              </div>
+            </div>
+
+          </div>
+          <button class="quiz-submit" onclick="submitQuiz('q2',5)">Submit Quiz ✓</button>
+          <div class="quiz-result" id="result-q2"></div>
+          <button class="quiz-retry" id="retry-q2" onclick="retryQuiz('q2')" style="display:none;">🔄 Try Again</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function showQuiz(id, btn) {
+        document.querySelectorAll('.quiz-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.quiz-sel-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('panel-' + id).classList.add('active');
+        btn.classList.add('active');
+      }
+      function submitQuiz(qid, total) {
+        const panel = document.getElementById('panel-' + qid);
+        let score = 0, unanswered = 0;
+        for (let i = 1; i <= total; i++) {
+          const opts = panel.querySelectorAll('input[name="' + qid + '_' + i + '"]');
+          let answered = false;
+          opts.forEach(opt => {
+            const label = opt.closest('.q-opt');
+            if (opt.checked) {
+              answered = true;
+              if (opt.value === '1') { score++; label.classList.add('correct'); }
+              else { label.classList.add('wrong'); }
+            }
+            if (opt.value === '1' && opt.checked === false) {
+              // show correct answer only after submit
+              label.classList.add('correct');
+            }
+            opt.disabled = true;
+          });
+          if (!answered) unanswered++;
+        }
+        if (unanswered > 0) {
+          alert('Please answer all ' + unanswered + ' unanswered question(s) before submitting!');
+          // re-enable
+          panel.querySelectorAll('input[type=radio]').forEach(r => r.disabled = false);
+          panel.querySelectorAll('.q-opt').forEach(l => { l.classList.remove('correct','wrong'); });
+          return;
+        }
+        const pct = Math.round((score / total) * 100);
+        let bg, emoji, msg;
+        if (pct >= 80) { bg = '#e8f7ed'; emoji = '🎉'; msg = 'Excellent! Keep it up!'; }
+        else if (pct >= 60) { bg = '#fff8e6'; emoji = '👍'; msg = 'Good effort! Review the wrong ones.'; }
+        else { bg = '#fdecea'; emoji = '📖'; msg = 'Keep practising! You can do it.'; }
+        const res = document.getElementById('result-' + qid);
+        res.style.background = bg;
+        res.innerHTML = '<div style="font-size:2.5rem;">' + emoji + '</div>' +
+          '<div class="result-score" style="color:var(--green-700);">' + score + '/' + total + '</div>' +
+          '<div class="result-msg">' + msg + '</div>' +
+          '<div class="result-detail">You scored ' + pct + '% · Correct: ' + score + ' · Wrong: ' + (total - score) + '</div>';
+        res.classList.add('show');
+        document.getElementById('retry-' + qid).style.display = 'inline-block';
+        panel.querySelector('.quiz-submit').style.display = 'none';
+      }
+      function retryQuiz(qid) {
+        const panel = document.getElementById('panel-' + qid);
+        panel.querySelectorAll('input[type=radio]').forEach(r => { r.disabled = false; r.checked = false; });
+        panel.querySelectorAll('.q-opt').forEach(l => { l.classList.remove('correct','wrong'); });
+        document.getElementById('result-' + qid).classList.remove('show');
+        document.getElementById('retry-' + qid).style.display = 'none';
+        panel.querySelector('.quiz-submit').style.display = 'block';
+      }
+    </script>
+
+  </div>
+</section>
+
+<section id="assignments">
+  <div class="container">
+    <div class="section-label">Practice & Homework</div>
+    <h2 class="section-title">Assignments</h2>
+    <p class="section-desc">Select your class, then your subject, then choose from Worksheets, Practice Tests or MCQ Quizzes.</p>
+
+    <style>
+      .assign-class-tabs { display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:2rem; margin-bottom:1rem; }
+      .assign-class-tab { padding:0.45rem 1rem; border-radius:20px; font-size:0.82rem; font-weight:600; cursor:pointer; border:1.5px solid var(--border); background:var(--white); color:var(--text-muted); transition:all 0.2s; }
+      .assign-class-tab.active { background:var(--green-600); color:#fff; border-color:var(--green-600); }
+      .assign-subj-tabs { display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap; }
+      .assign-subj-tab { padding:0.4rem 1.2rem; border-radius:8px; font-size:0.85rem; font-weight:600; cursor:pointer; border:1.5px solid var(--border); background:var(--white); color:var(--text-muted); transition:all 0.2s; }
+      .assign-subj-tab.active { background:var(--green-700); color:#fff; border-color:var(--green-700); }
+      .assign-type-tabs { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+      .assign-type-tab { padding:0.4rem 1rem; border-radius:20px; font-size:0.8rem; font-weight:600; cursor:pointer; border:1.5px solid var(--border); background:var(--white); color:var(--text-muted); transition:all 0.2s; }
+      .assign-type-tab.active { background:var(--gold); color:var(--green-900); border-color:var(--gold); }
+      .assign-panel { display:none; }
+      .assign-panel.active { display:flex; flex-direction:column; gap:1rem; }
+      .assignment-row { background:var(--white); border:1px solid var(--border); border-radius:12px; padding:1.1rem 1.4rem; display:flex; align-items:center; gap:1.25rem; transition:all 0.2s; }
+      .assignment-row:hover { border-color:var(--green-300); box-shadow:0 4px 16px rgba(10,46,26,0.06); }
+      .assign-num { width:34px; height:34px; border-radius:8px; background:var(--green-50); border:1px solid var(--green-100); display:flex; align-items:center; justify-content:center; font-size:0.78rem; font-weight:700; color:var(--green-600); flex-shrink:0; }
+      .assign-info { flex:1; }
+      .assign-title { font-size:0.92rem; font-weight:600; color:var(--text-dark); }
+      .assign-sub { font-size:0.78rem; color:var(--text-muted); margin-top:2px; }
+      .assign-due { font-size:0.75rem; font-weight:600; padding:4px 11px; border-radius:20px; white-space:nowrap; }
+      .due-soon { background:#fff3e0; color:#b35a00; }
+      .due-upcoming { background:var(--green-50); color:var(--green-700); }
+      .due-open { background:#e3f2fd; color:#1a5276; }
+    </style>
+
+    <!-- CLASS TABS -->
+    <div class="assign-class-tabs">
+      <div class="assign-class-tab active" onclick="switchAssignClass('6',this)">Class 6</div>
+      <div class="assign-class-tab" onclick="switchAssignClass('7',this)">Class 7</div>
+      <div class="assign-class-tab" onclick="switchAssignClass('8',this)">Class 8</div>
+      <div class="assign-class-tab" onclick="switchAssignClass('9',this)">Class 9</div>
+      <div class="assign-class-tab" onclick="switchAssignClass('10',this)">Class 10</div>
+      <div class="assign-class-tab" onclick="switchAssignClass('11',this)">Class 11</div>
+      <div class="assign-class-tab" onclick="switchAssignClass('12',this)">Class 12</div>
+    </div>
+
+    <!-- SUBJECT TABS -->
+    <div class="assign-subj-tabs">
+      <div class="assign-subj-tab active" id="as-math" onclick="switchAssignSubj('math',this)">📐 Mathematics</div>
+      <div class="assign-subj-tab" id="as-sci" onclick="switchAssignSubj('sci',this)">🔬 Science</div>
+    </div>
+
+    <!-- TYPE TABS -->
+    <div class="assign-type-tabs">
+      <div class="assign-type-tab active" id="at-ws" onclick="switchAssignType('ws',this)">📄 Worksheets</div>
+      <div class="assign-type-tab" id="at-pt" onclick="switchAssignType('pt',this)">📝 Practice Tests</div>
+      <div class="assign-type-tab" id="at-mcq" onclick="switchAssignType('mcq',this)">✅ MCQ Quizzes</div>
+    </div>
+
+    <!-- ── CLASS 6 MATH ── -->
+    <div class="assign-panel active" id="ap-6-math-ws">
+      <div class="assignment-row"><div class="assign-num">W1</div><div class="assign-info"><div class="assign-title">Worksheet – Pattern in Mathematics</div><div class="assign-sub">Maths · Class 6 · Chapter 1</div></div><span class="assign-due due-open">Open</span></div>
+      <div class="assignment-row"><div class="assign-num">W2</div><div class="assign-info"><div class="assign-title">Worksheet – Lines and Angles</div><div class="assign-sub">Maths · Class 6 · Chapter 2</div></div><span class="assign-due due-open">Open</span></div>
+      <div class="assignment-row"><div class="assign-num">W3</div><div class="assign-info"><div class="assign-title">Worksheet – Fractions</div><div class="assign-sub">Maths · Class 6 · Chapter 7</div></div><span class="assign-due due-upcoming">This Week</span></div>
+      <div class="assignment-row"><div class="assign-num">W4</div><div class="assign-info"><div class="assign-title">Worksheet – Perimeter and Area</div><div class="assign-sub">Maths · Class 6 · Chapter 6</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+    <div class="assign-panel" id="ap-6-math-pt">
+      <div class="assignment-row"><div class="assign-num">P1</div><div class="assign-info"><div class="assign-title">Practice Test – Number Play</div><div class="assign-sub">Maths · Class 6 · Chapter 3 · 20 marks</div></div><span class="assign-due due-open">Open</span></div>
+      <div class="assignment-row"><div class="assign-num">P2</div><div class="assign-info"><div class="assign-title">Practice Test – Symmetry</div><div class="assign-sub">Maths · Class 6 · Chapter 9 · 15 marks</div></div><span class="assign-due due-upcoming">This Week</span></div>
+    </div>
+    <div class="assign-panel" id="ap-6-math-mcq">
+      <div class="assignment-row"><div class="assign-num">Q1</div><div class="assign-info"><div class="assign-title">MCQ Quiz – Prime Time</div><div class="assign-sub">Maths · Class 6 · Chapter 5 · 10 questions</div></div><span class="assign-due due-open">Open</span></div>
+      <div class="assignment-row"><div class="assign-num">Q2</div><div class="assign-info"><div class="assign-title">MCQ Quiz – Data Handling and Presentation</div><div class="assign-sub">Maths · Class 6 · Chapter 4 · 10 questions</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+
+    <!-- ── CLASS 6 SCIENCE ── -->
+    <div class="assign-panel" id="ap-6-sci-ws">
+      <div class="assignment-row"><div class="assign-num">W1</div><div class="assign-info"><div class="assign-title">Worksheet – Diversity in the Living World</div><div class="assign-sub">Science · Class 6 · Chapter 2</div></div><span class="assign-due due-open">Open</span></div>
+      <div class="assignment-row"><div class="assign-num">W2</div><div class="assign-info"><div class="assign-title">Worksheet – Materials Around Us</div><div class="assign-sub">Science · Class 6 · Chapter 6</div></div><span class="assign-due due-upcoming">This Week</span></div>
+    </div>
+    <div class="assign-panel" id="ap-6-sci-pt">
+      <div class="assignment-row"><div class="assign-num">P1</div><div class="assign-info"><div class="assign-title">Practice Test – A Journey Through States of Water</div><div class="assign-sub">Science · Class 6 · Chapter 8 · 20 marks</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+    <div class="assign-panel" id="ap-6-sci-mcq">
+      <div class="assignment-row"><div class="assign-num">Q1</div><div class="assign-info"><div class="assign-title">MCQ Quiz – Exploring Magnets</div><div class="assign-sub">Science · Class 6 · Chapter 4 · 10 questions</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+
+    <!-- ── CLASS 7 MATH ── -->
+    <div class="assign-panel" id="ap-7-math-ws">
+      <div class="assignment-row"><div class="assign-num">W1</div><div class="assign-info"><div class="assign-title">Worksheet – Large Numbers Around Us</div><div class="assign-sub">Maths · Class 7 · Chapter 1</div></div><span class="assign-due due-open">Open</span></div>
+      <div class="assignment-row"><div class="assign-num">W2</div><div class="assign-info"><div class="assign-title">Worksheet – Arithmetic Expressions</div><div class="assign-sub">Maths · Class 7 · Chapter 2</div></div><span class="assign-due due-open">Open</span></div>
+      <div class="assignment-row"><div class="assign-num">W3</div><div class="assign-info"><div class="assign-title">Worksheet – Working with Fractions</div><div class="assign-sub">Maths · Class 7 · Chapter 8</div></div><span class="assign-due due-upcoming">This Week</span></div>
+    </div>
+    <div class="assign-panel" id="ap-7-math-pt">
+      <div class="assignment-row"><div class="assign-num">P1</div><div class="assign-info"><div class="assign-title">Practice Test – Parallel and Intersecting Lines</div><div class="assign-sub">Maths · Class 7 · Chapter 5 · 20 marks</div></div><span class="assign-due due-open">Open</span></div>
+      <div class="assignment-row"><div class="assign-num">P2</div><div class="assign-info"><div class="assign-title">Practice Test – Operations with Integers</div><div class="assign-sub">Maths · Class 7 · Chapter 10 · 20 marks</div></div><span class="assign-due due-upcoming">This Week</span></div>
+    </div>
+    <div class="assign-panel" id="ap-7-math-mcq">
+      <div class="assignment-row"><div class="assign-num">Q1</div><div class="assign-info"><div class="assign-title">MCQ Quiz – Finding the Unknown</div><div class="assign-sub">Maths · Class 7 · Chapter 15 · 10 questions</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+
+    <!-- ── CLASS 7 SCIENCE ── -->
+    <div class="assign-panel" id="ap-7-sci-ws">
+      <div class="assignment-row"><div class="assign-num">W1</div><div class="assign-info"><div class="assign-title">Worksheet – Changes Around Us: Physical & Chemical</div><div class="assign-sub">Science · Class 7 · Chapter 5</div></div><span class="assign-due due-open">Open</span></div>
+      <div class="assignment-row"><div class="assign-num">W2</div><div class="assign-info"><div class="assign-title">Worksheet – Heat Transfer in Nature</div><div class="assign-sub">Science · Class 7 · Chapter 7</div></div><span class="assign-due due-upcoming">This Week</span></div>
+    </div>
+    <div class="assign-panel" id="ap-7-sci-pt">
+      <div class="assignment-row"><div class="assign-num">P1</div><div class="assign-info"><div class="assign-title">Practice Test – Life Processes in Animals</div><div class="assign-sub">Science · Class 7 · Chapter 9 · 20 marks</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+    <div class="assign-panel" id="ap-7-sci-mcq">
+      <div class="assignment-row"><div class="assign-num">Q1</div><div class="assign-info"><div class="assign-title">MCQ Quiz – The World of Metals and Non-Metals</div><div class="assign-sub">Science · Class 7 · Chapter 4 · 10 questions</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+
+    <!-- ── CLASS 8 MATH ── -->
+    <div class="assign-panel" id="ap-8-math-ws">
+      <div class="assignment-row"><div class="assign-num">W1</div><div class="assign-info"><div class="assign-title">Worksheet – A Square and A Cube</div><div class="assign-sub">Maths · Class 8 · Chapter 1</div></div><span class="assign-due due-open">Open</span></div>
+      <div class="assignment-row"><div class="assign-num">W2</div><div class="assign-info"><div class="assign-title">Worksheet – Quadrilaterals</div><div class="assign-sub">Maths · Class 8 · Chapter 4</div></div><span class="assign-due due-upcoming">This Week</span></div>
+      <div class="assignment-row"><div class="assign-num">W3</div><div class="assign-info"><div class="assign-title">Worksheet – The Baudhayana-Pythagoras Theorem</div><div class="assign-sub">Maths · Class 8 · Chapter 9</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+    <div class="assign-panel" id="ap-8-math-pt">
+      <div class="assignment-row"><div class="assign-num">P1</div><div class="assign-info"><div class="assign-title">Practice Test – Proportional Reasoning</div><div class="assign-sub">Maths · Class 8 · Ch 7 & 10 · 25 marks</div></div><span class="assign-due due-open">Open</span></div>
+      <div class="assignment-row"><div class="assign-num">P2</div><div class="assign-info"><div class="assign-title">Practice Test – Area</div><div class="assign-sub">Maths · Class 8 · Chapter 14 · 20 marks</div></div><span class="assign-due due-upcoming">This Week</span></div>
+    </div>
+    <div class="assign-panel" id="ap-8-math-mcq">
+      <div class="assignment-row"><div class="assign-num">Q1</div><div class="assign-info"><div class="assign-title">MCQ Quiz – Power Play (Exponents)</div><div class="assign-sub">Maths · Class 8 · Chapter 2 · 10 questions</div></div><span class="assign-due due-open">Open</span></div>
+      <div class="assignment-row"><div class="assign-num">Q2</div><div class="assign-info"><div class="assign-title">MCQ Quiz – Algebra Play</div><div class="assign-sub">Maths · Class 8 · Chapter 13 · 10 questions</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+
+    <!-- ── CLASS 8 SCIENCE ── -->
+    <div class="assign-panel" id="ap-8-sci-ws">
+      <div class="assignment-row"><div class="assign-num">W1</div><div class="assign-info"><div class="assign-title">Worksheet – Exploring Forces</div><div class="assign-sub">Science · Class 8 · Chapter 5</div></div><span class="assign-due due-open">Open</span></div>
+      <div class="assignment-row"><div class="assign-num">W2</div><div class="assign-info"><div class="assign-title">Worksheet – Particulate Nature of Matter</div><div class="assign-sub">Science · Class 8 · Chapter 7</div></div><span class="assign-due due-upcoming">This Week</span></div>
+    </div>
+    <div class="assign-panel" id="ap-8-sci-pt">
+      <div class="assignment-row"><div class="assign-num">P1</div><div class="assign-info"><div class="assign-title">Practice Test – Light: Mirrors and Lenses</div><div class="assign-sub">Science · Class 8 · Chapter 10 · 25 marks</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+    <div class="assign-panel" id="ap-8-sci-mcq">
+      <div class="assignment-row"><div class="assign-num">Q1</div><div class="assign-info"><div class="assign-title">MCQ Quiz – The Invisible Living World</div><div class="assign-sub">Science · Class 8 · Chapter 2 · 10 questions</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+
+    <!-- ── CLASS 9 MATH ── -->
+    <div class="assign-panel" id="ap-9-math-ws">
+      <div class="assignment-row"><div class="assign-num">W1</div><div class="assign-info"><div class="assign-title">Worksheet – Orienting Yourself: Use of Coordinates</div><div class="assign-sub">Maths · Class 9 · Chapter 1</div></div><span class="assign-due due-open">Open</span></div>
+      <div class="assignment-row"><div class="assign-num">W2</div><div class="assign-info"><div class="assign-title">Worksheet – Exploring Algebraic Identities</div><div class="assign-sub">Maths · Class 9 · Chapter 4</div></div><span class="assign-due due-upcoming">This Week</span></div>
+      <div class="assignment-row"><div class="assign-num">W3</div><div class="assign-info"><div class="assign-title">Worksheet – Circles</div><div class="assign-sub">Maths · Class 9 · Chapter 9</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+    <div class="assign-panel" id="ap-9-math-pt">
+      <div class="assignment-row"><div class="assign-num">P1</div><div class="assign-info"><div class="assign-title">Practice Test – Surface Areas and Volumes</div><div class="assign-sub">Maths · Class 9 · Chapter 11 · 25 marks</div></div><span class="assign-due due-soon">Due Soon</span></div>
+      <div class="assignment-row"><div class="assign-num">P2</div><div class="assign-info"><div class="assign-title">Practice Test – Statistics</div><div class="assign-sub">Maths · Class 9 · Chapter 12 · 20 marks</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+    <div class="assign-panel" id="ap-9-math-mcq">
+      <div class="assignment-row"><div class="assign-num">Q1</div><div class="assign-info"><div class="assign-title">MCQ Quiz – The Mathematics of Maybe (Probability)</div><div class="assign-sub">Maths · Class 9 · Chapter 7 · 10 questions</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+
+    <!-- ── CLASS 9 SCIENCE ── -->
+    <div class="assign-panel" id="ap-9-sci-ws">
+      <div class="assignment-row"><div class="assign-num">W1</div><div class="assign-info"><div class="assign-title">Worksheet – Describing Motion Around Us</div><div class="assign-sub">Science · Class 9 · Chapter 4</div></div><span class="assign-due due-open">Open</span></div>
+      <div class="assignment-row"><div class="assign-num">W2</div><div class="assign-info"><div class="assign-title">Worksheet – Journey Inside the Atom</div><div class="assign-sub">Science · Class 9 · Chapter 8</div></div><span class="assign-due due-upcoming">This Week</span></div>
+    </div>
+    <div class="assign-panel" id="ap-9-sci-pt">
+      <div class="assignment-row"><div class="assign-num">P1</div><div class="assign-info"><div class="assign-title">Practice Test – How Forces Affect Motion</div><div class="assign-sub">Science · Class 9 · Chapter 6 · 25 marks</div></div><span class="assign-due due-soon">Due Soon</span></div>
+      <div class="assignment-row"><div class="assign-num">P2</div><div class="assign-info"><div class="assign-title">Practice Test – Work, Energy, and Simple Machines</div><div class="assign-sub">Science · Class 9 · Chapter 7 · 25 marks</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+    <div class="assign-panel" id="ap-9-sci-mcq">
+      <div class="assignment-row"><div class="assign-num">Q1</div><div class="assign-info"><div class="assign-title">MCQ Quiz – Atomic Foundations of Matter</div><div class="assign-sub">Science · Class 9 · Chapter 9 · 15 questions</div></div><span class="assign-due due-open">Open</span></div>
+      <div class="assignment-row"><div class="assign-num">Q2</div><div class="assign-info"><div class="assign-title">MCQ Quiz – Patterns in Life: Diversity & Classification</div><div class="assign-sub">Science · Class 9 · Chapter 12 · 10 questions</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+
+    <!-- ── CLASS 10 MATH ── -->
+    <div class="assign-panel" id="ap-10-math-ws">
+      <div class="assignment-row"><div class="assign-num">W1</div><div class="assign-info"><div class="assign-title">Worksheet – Real Numbers</div><div class="assign-sub">Maths · Class 10 · Chapter 1</div></div><span class="assign-due due-open">Open</span></div>
+      <div class="assignment-row"><div class="assign-num">W2</div><div class="assign-info"><div class="assign-title">Worksheet – Polynomials</div><div class="assign-sub">Maths · Class 10 · Chapter 2</div></div><span class="assign-due due-soon">Due Soon</span></div>
+      <div class="assignment-row"><div class="assign-num">W3</div><div class="assign-info"><div class="assign-title">Worksheet – Quadratic Equations</div><div class="assign-sub">Maths · Class 10 · Chapter 4</div></div><span class="assign-due due-upcoming">This Week</span></div>
+    </div>
+    <div class="assign-panel" id="ap-10-math-pt">
+      <div class="assignment-row"><div class="assign-num">P1</div><div class="assign-info"><div class="assign-title">Practice Test – Trigonometry (Ch 8 & 9)</div><div class="assign-sub">Maths · Class 10 · 30 marks</div></div><span class="assign-due due-soon">Due Soon</span></div>
+      <div class="assignment-row"><div class="assign-num">P2</div><div class="assign-info"><div class="assign-title">Practice Test – Statistics & Probability</div><div class="assign-sub">Maths · Class 10 · Ch 13 & 14 · 30 marks</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+    <div class="assign-panel" id="ap-10-math-mcq">
+      <div class="assignment-row"><div class="assign-num">Q1</div><div class="assign-info"><div class="assign-title">MCQ Quiz – Polynomials (10 questions)</div><div class="assign-sub">Maths · Class 10 · Chapter 2 · Available in Quizzes section</div></div><span class="assign-due due-open">Open</span></div>
+      <div class="assignment-row"><div class="assign-num">Q2</div><div class="assign-info"><div class="assign-title">MCQ Quiz – Circles</div><div class="assign-sub">Maths · Class 10 · Chapter 10 · 15 questions</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+
+    <!-- ── CLASS 10 SCIENCE ── -->
+    <div class="assign-panel" id="ap-10-sci-ws">
+      <div class="assignment-row"><div class="assign-num">W1</div><div class="assign-info"><div class="assign-title">Worksheet – Chemical Reactions and Equations</div><div class="assign-sub">Science · Class 10 · Chapter 1</div></div><span class="assign-due due-open">Open</span></div>
+      <div class="assignment-row"><div class="assign-num">W2</div><div class="assign-info"><div class="assign-title">Worksheet – Acids, Bases and Salts</div><div class="assign-sub">Science · Class 10 · Chapter 2</div></div><span class="assign-due due-upcoming">This Week</span></div>
+    </div>
+    <div class="assign-panel" id="ap-10-sci-pt">
+      <div class="assignment-row"><div class="assign-num">P1</div><div class="assign-info"><div class="assign-title">Practice Test – Light: Reflection & Refraction</div><div class="assign-sub">Science · Class 10 · Chapter 9 · 25 marks</div></div><span class="assign-due due-soon">Due Soon</span></div>
+      <div class="assignment-row"><div class="assign-num">P2</div><div class="assign-info"><div class="assign-title">Practice Test – Electricity & Magnetism</div><div class="assign-sub">Science · Class 10 · Ch 11 & 12 · 30 marks</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+    <div class="assign-panel" id="ap-10-sci-mcq">
+      <div class="assignment-row"><div class="assign-num">Q1</div><div class="assign-info"><div class="assign-title">MCQ Quiz – Life Processes</div><div class="assign-sub">Science · Class 10 · Chapter 5 · 15 questions</div></div><span class="assign-due due-open">Open</span></div>
+      <div class="assignment-row"><div class="assign-num">Q2</div><div class="assign-info"><div class="assign-title">MCQ Quiz – Heredity</div><div class="assign-sub">Science · Class 10 · Chapter 8 · 10 questions</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+
+    <!-- ── CLASS 11 MATH ── -->
+    <div class="assign-panel" id="ap-11-math-ws">
+      <div class="assignment-row"><div class="assign-num">W1</div><div class="assign-info"><div class="assign-title">Worksheet – Sets</div><div class="assign-sub">Maths · Class 11 · Chapter 1</div></div><span class="assign-due due-open">Open</span></div>
+      <div class="assignment-row"><div class="assign-num">W2</div><div class="assign-info"><div class="assign-title">Worksheet – Permutations and Combinations</div><div class="assign-sub">Maths · Class 11 · Chapter 6</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+    <div class="assign-panel" id="ap-11-math-pt">
+      <div class="assignment-row"><div class="assign-num">P1</div><div class="assign-info"><div class="assign-title">Practice Test – Limits and Derivatives</div><div class="assign-sub">Maths · Class 11 · Chapter 12 · 30 marks</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+    <div class="assign-panel" id="ap-11-math-mcq">
+      <div class="assignment-row"><div class="assign-num">Q1</div><div class="assign-info"><div class="assign-title">MCQ Quiz – Trigonometric Functions</div><div class="assign-sub">Maths · Class 11 · Chapter 3 · 15 questions</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+
+
+
+    <!-- ── CLASS 12 MATH ── -->
+    <div class="assign-panel" id="ap-12-math-ws">
+      <div class="assignment-row"><div class="assign-num">W1</div><div class="assign-info"><div class="assign-title">Worksheet – Matrices</div><div class="assign-sub">Maths · Class 12 · Chapter 3</div></div><span class="assign-due due-open">Open</span></div>
+      <div class="assignment-row"><div class="assign-num">W2</div><div class="assign-info"><div class="assign-title">Worksheet – Application of Derivatives</div><div class="assign-sub">Maths · Class 12 · Chapter 6</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+    <div class="assign-panel" id="ap-12-math-pt">
+      <div class="assignment-row"><div class="assign-num">P1</div><div class="assign-info"><div class="assign-title">Practice Test – Integrals</div><div class="assign-sub">Maths · Class 12 · Chapter 7 · 30 marks</div></div><span class="assign-due due-upcoming">This Week</span></div>
+    </div>
+    <div class="assign-panel" id="ap-12-math-mcq">
+      <div class="assignment-row"><div class="assign-num">Q1</div><div class="assign-info"><div class="assign-title">MCQ Quiz – Matrices & Determinants</div><div class="assign-sub">Maths · Class 12 · Ch 3 & 4 · 20 questions</div></div><span class="assign-due due-open">Open</span></div>
+    </div>
+
+
+
+    <script>
+      let acls='6', asubj='math', atype='ws';
+      function switchAssignClass(cls,el){
+        acls=cls;
+        document.querySelectorAll('.assign-class-tab').forEach(t=>t.classList.remove('active'));
+        el.classList.add('active');
+        updateAssignPanel();
+      }
+      function switchAssignSubj(subj,el){
+        asubj=subj;
+        document.querySelectorAll('.assign-subj-tab').forEach(t=>t.classList.remove('active'));
+        el.classList.add('active');
+        updateAssignPanel();
+      }
+      function switchAssignType(type,el){
+        atype=type;
+        document.querySelectorAll('.assign-type-tab').forEach(t=>t.classList.remove('active'));
+        el.classList.add('active');
+        updateAssignPanel();
+      }
+      function updateAssignPanel(){
+        document.querySelectorAll('.assign-panel').forEach(p=>p.classList.remove('active'));
+        const id='ap-'+acls+'-'+asubj+'-'+atype;
+        const el=document.getElementById(id);
+        if(el){ el.classList.add('active'); }
+        else {
+          // show empty state
+          document.querySelectorAll('.assign-panel').forEach(p=>p.classList.remove('active'));
+          const first = document.querySelector('.assign-panel');
+          if(first){ first.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text-muted);font-size:0.9rem;">📭 No assignments yet for this selection. Check back soon!</div>'; first.classList.add('active'); }
+        }
+      }
+    </script>
+
+  </div>
+</section>
+
+<section id="resources">
+  <div class="container">
+    <div class="section-label">Useful Links</div>
+    <h2 class="section-title">Resources</h2>
+    <p class="section-desc">Handpicked websites, tools and references to help you study better.</p>
+    <div class="resources-grid">
+      <a href="https://www.khanacademy.org" target="_blank" class="resource-card"><div class="resource-icon">🎓</div><div class="resource-name">Khan Academy</div><div class="resource-desc">Free lessons on Maths and Science with practice exercises.</div><div class="resource-arrow">Open →</div></a>
+      <a href="https://www.desmos.com/calculator" target="_blank" class="resource-card"><div class="resource-icon">📈</div><div class="resource-name">Desmos Calculator</div><div class="resource-desc">Free online graphing calculator — great for visualizing equations.</div><div class="resource-arrow">Open →</div></a>
+      <a href="https://www.wolframalpha.com" target="_blank" class="resource-card"><div class="resource-icon">🧮</div><div class="resource-name">Wolfram Alpha</div><div class="resource-desc">Solve complex maths problems and get step-by-step solutions.</div><div class="resource-arrow">Open →</div></a>
+      <a href="https://www.ncert.nic.in" target="_blank" class="resource-card"><div class="resource-icon">📚</div><div class="resource-name">NCERT Official</div><div class="resource-desc">Download official NCERT textbooks and solutions for free.</div><div class="resource-arrow">Open →</div></a>
+      <a href="https://phet.colorado.edu" target="_blank" class="resource-card"><div class="resource-icon">⚗️</div><div class="resource-name">PhET Simulations</div><div class="resource-desc">Free interactive science simulations — Physics, Chemistry, Biology.</div><div class="resource-arrow">Open →</div></a>
+      <a href="https://www.geogebra.org" target="_blank" class="resource-card"><div class="resource-icon">📐</div><div class="resource-name">GeoGebra</div><div class="resource-desc">Dynamic geometry, algebra and calculus tools for students.</div><div class="resource-arrow">Open →</div></a>
+    </div>
+  </div>
+</section>
+
+<section id="nep">
+  <div class="container">
+    <div class="section-label">Education Policy</div>
+    <h2 class="section-title">NEP 2020</h2>
+    <p class="section-desc">National Education Policy 2020 — India's landmark education reform explained in English and Hindi.</p>
+    <div class="nep-lang-tabs">
+      <div class="nep-lang-tab active" onclick="switchNep('en',this)">🇬🇧 English</div>
+      <div class="nep-lang-tab" onclick="switchNep('hi',this)">🇮🇳 हिंदी</div>
+    </div>
+    <div class="nep-content active" id="nep-en">
+      <div class="nep-summary">
+        <h3>What is NEP 2020?</h3>
+        <p>The National Education Policy 2020 is India's most comprehensive education reform since 1986. Approved by the Union Cabinet on July 29, 2020, it replaces the previous National Policy on Education and lays out a vision for transforming India's education system by 2040.</p>
+        <p><strong>Key Highlights:</strong></p>
+        <ul class="nep-points">
+          <li>New 5+3+3+4 school structure replacing the old 10+2 system — covering ages 3 to 18.</li>
+          <li>Mother tongue / regional language as medium of instruction up to Grade 5 (preferably till Grade 8).</li>
+          <li>No rigid separation of Arts, Science and Commerce streams from Class 11 onwards.</li>
+          <li>Focus on conceptual understanding, critical thinking and creativity over rote learning.</li>
+          <li>Coding introduced from Class 6; vocational education from Class 6 onwards.</li>
+          <li>Board exams redesigned — students can appear twice per year; focus on application-based questions.</li>
+          <li>Higher Education: multidisciplinary approach, 4-year UG programmes with multiple entry/exit options.</li>
+          <li>Target: 100% Gross Enrolment Ratio in school education by 2030.</li>
+          <li>Public investment in education to be raised to 6% of GDP.</li>
+        </ul>
+        <p><strong>Conclusion:</strong> NEP 2020 is a student-centered, holistic and flexible policy that shifts focus from marks to learning outcomes. It emphasizes skill development, digital literacy and India's knowledge tradition, preparing students to be global citizens rooted in local values. As teachers, understanding NEP 2020 helps us align our teaching with the future of Indian education.</p>
+      </div>
+      <div class="nep-pdfs">
+        <a href="https://www.education.gov.in/sites/upload_files/mhrd/files/NEP_Final_English_0.pdf" target="_blank" class="nep-pdf-card"><div class="nep-pdf-icon">📄</div><div><div class="nep-pdf-title">NEP 2020 — Full Document</div><div class="nep-pdf-sub">English · Official PDF · Ministry of Education</div></div></a>
+        <a href="https://www.education.gov.in/sites/upload_files/mhrd/files/NEP_Final_English_0.pdf" target="_blank" class="nep-pdf-card" style="background:linear-gradient(135deg,#1a3a6e,#2d6abf);"><div class="nep-pdf-icon">📋</div><div><div class="nep-pdf-title">NEP 2020 — Summary</div><div class="nep-pdf-sub">English · Key points · Quick overview</div></div></a>
+      </div>
+    </div>
+    <div class="nep-content" id="nep-hi">
+      <div class="nep-summary">
+        <h3>NEP 2020 क्या है?</h3>
+        <p>राष्ट्रीय शिक्षा नीति 2020 भारत में 1986 के बाद की सबसे व्यापक शिक्षा सुधार नीति है। इसे 29 जुलाई 2020 को केंद्रीय मंत्रिमंडल द्वारा अनुमोदित किया गया। यह नीति 2040 तक भारत की शिक्षा प्रणाली को पूरी तरह बदलने का लक्ष्य रखती है।</p>
+        <p><strong>मुख्य विशेषताएँ:</strong></p>
+        <ul class="nep-points">
+          <li>पुरानी 10+2 संरचना की जगह नई 5+3+3+4 संरचना — यह 3 से 18 वर्ष के बच्चों को कवर करेगी।</li>
+          <li>कक्षा 5 तक मातृभाषा / क्षेत्रीय भाषा में शिक्षा (अधिमानतः कक्षा 8 तक)।</li>
+          <li>कक्षा 11 से कला, विज्ञान और वाणिज्य की कठोर अलगता समाप्त।</li>
+          <li>रटने की बजाय वैचारिक समझ, आलोचनात्मक सोच और रचनात्मकता पर जोर।</li>
+          <li>कक्षा 6 से कोडिंग और व्यावसायिक शिक्षा की शुरुआत।</li>
+          <li>बोर्ड परीक्षाओं में सुधार — साल में दो बार परीक्षा; अनुप्रयोग-आधारित प्रश्न।</li>
+          <li>उच्च शिक्षा: 4 वर्षीय स्नातक कार्यक्रम जिसमें कई प्रवेश/निकास विकल्प।</li>
+          <li>2030 तक स्कूली शिक्षा में 100% सकल नामांकन अनुपात का लक्ष्य।</li>
+          <li>शिक्षा में सार्वजनिक निवेश GDP का 6% तक बढ़ाया जाएगा।</li>
+        </ul>
+        <p><strong>निष्कर्ष:</strong> NEP 2020 एक छात्र-केंद्रित, समग्र और लचीली नीति है जो अंकों से हटकर सीखने के परिणामों पर ध्यान केंद्रित करती है। यह कौशल विकास, डिजिटल साक्षरता और भारतीय ज्ञान परंपरा पर जोर देती है। शिक्षकों के लिए NEP 2020 को समझना बेहद जरूरी है ताकि हम अपनी शिक्षण पद्धतियों को भारत के शिक्षा के भविष्य के अनुरूप बना सकें।</p>
+      </div>
+      <div class="nep-pdfs">
+        <a href="https://www.education.gov.in/sites/upload_files/mhrd/files/Hindi_NEP_2020.pdf" target="_blank" class="nep-pdf-card"><div class="nep-pdf-icon">📄</div><div><div class="nep-pdf-title">NEP 2020 — पूर्ण दस्तावेज़</div><div class="nep-pdf-sub">हिंदी · आधिकारिक PDF · शिक्षा मंत्रालय</div></div></a>
+        <a href="https://www.education.gov.in/sites/upload_files/mhrd/files/Hindi_NEP_2020.pdf" target="_blank" class="nep-pdf-card" style="background:linear-gradient(135deg,#1a3a6e,#2d6abf);"><div class="nep-pdf-icon">📋</div><div><div class="nep-pdf-title">NEP 2020 — सारांश</div><div class="nep-pdf-sub">हिंदी · मुख्य बिंदु · त्वरित अवलोकन</div></div></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="feedback">
+  <div class="container">
+    <div class="section-label">Your Opinion Matters</div>
+    <h2 class="section-title">Feedback</h2>
+    <p class="section-desc">Help us improve! Share your thoughts about the classes, notes and overall experience.</p>
+    <div class="feedback-inner">
+      <div class="feedback-form">
+        <h3>✍️ Leave Your Feedback</h3>
+        <div class="form-group"><label>Your Name</label><input type="text" id="fb-name" placeholder="e.g. Rahul Sharma"/></div>
+        <div class="form-group"><label>Class</label><select id="fb-class"><option value="">Select your class</option><option>Class 6</option><option>Class 7</option><option>Class 8</option><option>Class 9</option><option>Class 10</option><option>Class 11</option><option>Class 12</option></select></div>
+        <div class="form-group"><label>Rating</label><div class="stars" id="star-rating"><span class="star" onclick="setRating(1)">★</span><span class="star" onclick="setRating(2)">★</span><span class="star" onclick="setRating(3)">★</span><span class="star" onclick="setRating(4)">★</span><span class="star" onclick="setRating(5)">★</span></div></div>
+        <div class="form-group"><label>Your Feedback</label><textarea id="fb-text" placeholder="What did you find helpful? What can be improved?"></textarea></div>
+        <button class="submit-btn" onclick="submitFeedback()">Submit Feedback ✓</button>
+        <div class="success-msg" id="fb-success">🎉 Thank you for your feedback! It means a lot.</div>
+      </div>
+      <div class="feedback-reviews">
+        <h3>💬 What Students Say</h3>
+        <div class="review-card"><div class="review-top"><div class="review-avatar">RK</div><div><div class="review-name">Rohit Kumar</div><div class="review-grade">Class 10</div></div><div class="review-stars">★★★★★</div></div><div class="review-text">The notes are very clear and easy to understand. Chapter-wise organization makes revision much easier before exams!</div></div>
+        <div class="review-card"><div class="review-top"><div class="review-avatar">PS</div><div><div class="review-name">Priya Singh</div><div class="review-grade">Class 9</div></div><div class="review-stars">★★★★★</div></div><div class="review-text">The online quiz feature is amazing! I can practice anytime and get instant results. Really helps with self-study.</div></div>
+        <div class="review-card"><div class="review-top"><div class="review-avatar">AM</div><div><div class="review-name">Arjun Mishra</div><div class="review-grade">Class 8</div></div><div class="review-stars">★★★★☆</div></div><div class="review-text">Great resources and links. The NCERT and Khan Academy links are very useful. Would love more video lessons!</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="container">
+    <div class="section-label">Get in Touch</div>
+    <h2 class="section-title">Contact</h2>
+    <p class="section-desc">Have a question about a topic, assignment or notes? Reach out — I'm happy to help!</p>
+    <div class="contact-grid">
+      <div class="contact-card"><div class="contact-icon">📞</div><div class="contact-type">Phone / WhatsApp</div><div class="contact-value"><a href="tel:+919507020419">+91 95070 20419</a></div><div class="contact-hours">Mon–Sat, 9 AM – 7 PM</div></div>
+      <div class="contact-card"><div class="contact-icon">📧</div><div class="contact-type">Email</div><div class="contact-value"><a href="mailto:saurav97834@gmail.com">saurav97834@gmail.com</a></div><div class="contact-hours">Reply within 24 hours</div></div>
+      <div class="contact-card"><div class="contact-icon">💬</div><div class="contact-type">WhatsApp</div><div class="contact-value"><a href="https://wa.me/919507020419" target="_blank">Chat on WhatsApp</a></div><div class="contact-hours">Quick replies on WhatsApp</div></div>
+      <div class="contact-card"><div class="contact-icon">🕐</div><div class="contact-type">Office Hours</div><div class="contact-value">Mon – Sat</div><div class="contact-hours">9:00 AM to 7:00 PM IST</div></div>
+    </div>
+    <div class="contact-map"><h3>📍 Location</h3><p>Ara, Bihar, India<br>Classes available both online and in-person. Contact for details.</p></div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="container">
+    <div class="section-label">Meet Your Teacher</div>
+    <h2 class="section-title">About Saurav Mishra</h2>
+    <p class="section-desc">Passionate educator dedicated to making Mathematics and Science simple, fun and accessible for every student.</p>
+
+    <!-- TOP: Photo + Quick Info -->
+    <div class="about-inner" style="margin-top:3rem;">
+      <div style="display:flex;justify-content:center;">
+        <div style="width:200px;height:200px;border-radius:50%;overflow:hidden;border:4px solid var(--green-100);box-shadow:0 12px 40px rgba(26,102,57,0.25);">
+          <img src="Saurav Mishra.jpeg" alt="Saurav Mishra" style="width:100%;height:100%;object-fit:cover;object-position:center;">
+        </div>
+      </div>
+      <div class="about-text">
+        <div class="section-label">Your Teacher</div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:1.75rem;margin-bottom:0.5rem;color:var(--text-dark);">Saurav Mishra</h3>
+        <p style="color:var(--green-600);font-weight:600;font-size:0.95rem;margin-bottom:1rem;">M.Sc · B.Ed · Mathematics & Science Educator</p>
+        <p>A dedicated and passionate teacher with 7 years of experience in teaching Mathematics and Science to students from Grade 6 to Grade 12. My goal is to make every concept simple, clear and enjoyable — so that students not only pass exams but truly understand and love what they learn.</p>
+        <div class="about-details">
+          <div class="about-detail"><span class="detail-label">Qualification</span><span class="detail-value">M.Sc + B.Ed</span></div>
+          <div class="about-detail"><span class="detail-label">Experience</span><span class="detail-value">7 Years</span></div>
+          <div class="about-detail"><span class="detail-label">Subjects</span><span class="detail-value">Maths & Science</span></div>
+          <div class="about-detail"><span class="detail-label">Grade</span><span class="detail-value">6 – 12 (CBSE)</span></div>
+          <div class="about-detail"><span class="detail-label">Location</span><span class="detail-value">Ara, Bihar</span></div>
+          <div class="about-detail"><span class="detail-label">Phone</span><span class="detail-value">+91 95070 20419</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INFO CARDS GRID -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem;margin-top:3rem;">
+
+      <!-- Teaching Philosophy -->
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:16px;padding:1.75rem;border-top:4px solid var(--green-400);">
+        <div style="font-size:2rem;margin-bottom:0.75rem;">💡</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:0.75rem;color:var(--text-dark);">My Teaching Philosophy</div>
+        <p style="font-size:0.88rem;color:var(--text-muted);line-height:1.75;">"Every concept in Mathematics and Science has a simple, beautiful explanation. My job is to find that explanation and present it in a way that makes students say — <em>oh, now I get it!</em> Learning should never feel like a burden; it should feel like discovery."</p>
+      </div>
+
+      <!-- Qualification & Experience -->
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:16px;padding:1.75rem;border-top:4px solid var(--gold);">
+        <div style="font-size:2rem;margin-bottom:0.75rem;">🎓</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:0.75rem;color:var(--text-dark);">Qualification & Experience</div>
+        <ul style="list-style:none;padding:0;font-size:0.88rem;color:var(--text-muted);line-height:1.8;">
+          <li>✦ M.Sc in Mathematics / Science</li>
+          <li>✦ B.Ed — Bachelor of Education</li>
+          <li>✦ 7 years of active teaching experience</li>
+          <li>✦ Specialisation in CBSE curriculum (Class 6–12)</li>
+          <li>✦ Experience in both classroom and online teaching</li>
+          <li>✦ Trained in NEP 2020 teaching methodologies</li>
+        </ul>
+      </div>
+
+      <!-- Purpose of Website -->
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:16px;padding:1.75rem;border-top:4px solid var(--green-300);">
+        <div style="font-size:2rem;margin-bottom:0.75rem;">🌐</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:0.75rem;color:var(--text-dark);">Purpose of This Website</div>
+        <p style="font-size:0.88rem;color:var(--text-muted);line-height:1.75;">PM Math was created with one simple goal — <strong>to give every student free access to quality study material, anytime, anywhere.</strong> Whether you are preparing for exams, revising a topic, or simply curious — this portal is always open for you. No fees. No login. Just learning.</p>
+      </div>
+
+      <!-- My Approach -->
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:16px;padding:1.75rem;border-top:4px solid #e88c30;">
+        <div style="font-size:2rem;margin-bottom:0.75rem;">📚</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:0.75rem;color:var(--text-dark);">My Teaching Approach</div>
+        <ul style="list-style:none;padding:0;font-size:0.88rem;color:var(--text-muted);line-height:1.8;">
+          <li>✦ Step-by-step explanation of every concept</li>
+          <li>✦ Real-life examples to make topics relatable</li>
+          <li>✦ Regular practice through worksheets and quizzes</li>
+          <li>✦ Focus on understanding, not just memorising</li>
+          <li>✦ Encouraging questions and curiosity in class</li>
+          <li>✦ Tracking each student's progress individually</li>
+        </ul>
+      </div>
+
+      <!-- Opinion on Learning -->
+      <div style="background:linear-gradient(135deg,var(--green-800),var(--green-600));border-radius:16px;padding:1.75rem;">
+        <div style="font-size:2rem;margin-bottom:0.75rem;">💬</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:0.75rem;color:#fff;">My Opinion on Learning</div>
+        <p style="font-size:0.88rem;color:rgba(255,255,255,0.85);line-height:1.75;">"A student who asks questions is a student who is thinking. I believe the classroom should be a safe space where every doubt is welcome, every mistake is a lesson, and every small success is celebrated. The best students are not the ones who memorise the most — they are the ones who are most curious."</p>
+        <p style="font-size:0.8rem;color:rgba(255,255,255,0.55);margin-top:0.75rem;">— Saurav Mishra</p>
+      </div>
+
+      <!-- What Students Get -->
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:16px;padding:1.75rem;border-top:4px solid #6a5acd;">
+        <div style="font-size:2rem;margin-bottom:0.75rem;">🎯</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:0.75rem;color:var(--text-dark);">What Students Get Here</div>
+        <ul style="list-style:none;padding:0;font-size:0.88rem;color:var(--text-muted);line-height:1.8;">
+          <li>✦ CBSE chapter-wise notes (Class 6–12)</li>
+          <li>✦ Video lessons on every major topic</li>
+          <li>✦ Online quizzes with instant results</li>
+          <li>✦ Worksheets, practice tests & MCQ sets</li>
+          <li>✦ Curated resource links (NCERT, Khan Academy etc.)</li>
+          <li>✦ Direct contact with the teacher anytime</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Achievement Strip -->
+    <div style="background:var(--green-50);border:1px solid var(--green-100);border-radius:14px;padding:1.5rem 2rem;margin-top:2rem;display:flex;gap:2rem;flex-wrap:wrap;justify-content:center;align-items:center;">
+      <div style="text-align:center;"><div style="font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:700;color:var(--green-700);">7</div><div style="font-size:0.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;">Years Teaching</div></div>
+      <div style="width:1px;height:40px;background:var(--green-200);"></div>
+      <div style="text-align:center;"><div style="font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:700;color:var(--green-700);">2</div><div style="font-size:0.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;">Subjects</div></div>
+      <div style="width:1px;height:40px;background:var(--green-200);"></div>
+      <div style="text-align:center;"><div style="font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:700;color:var(--green-700);">7</div><div style="font-size:0.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;">Grade Levels</div></div>
+      <div style="width:1px;height:40px;background:var(--green-200);"></div>
+      <div style="text-align:center;"><div style="font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:700;color:var(--green-700);">100%</div><div style="font-size:0.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;">Free Access</div></div>
+      <div style="width:1px;height:40px;background:var(--green-200);"></div>
+      <div style="text-align:center;"><div style="font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:700;color:var(--green-700);">CBSE</div><div style="font-size:0.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;">Curriculum</div></div>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">PM <span>Math</span></div>
+  <p>by Saurav Mishra · Mathematics & Science · Grade 6–12 · CBSE</p>
+  <div class="footer-links">
+    <a href="#subjects">Subjects</a><a href="#notes">Notes</a><a href="#campus">Campus</a>
+    <a href="#videos">Videos</a><a href="#quizzes">Quizzes</a><a href="#assignments">Assignments</a>
+    <a href="#resources">Resources</a><a href="#nep">NEP 2020</a>
+    <a href="#feedback">Feedback</a><a href="#contact">Contact</a><a href="#about">About</a>
+  </div>
+  <div class="footer-bottom">© 2025 PM Math · Saurav Mishra · All rights reserved</div>
+</footer>
+
+<script>
+  // Nav active on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 80) current = s.id; });
+    navLinks.forEach(a => { a.classList.remove('active'); if (a.getAttribute('href') === '#' + current) a.classList.add('active'); });
+  });
+  // Notes switcher
+  let currentClass = '6', currentSubj = 'math';
+  function switchClass(cls) {
+    currentClass = cls;
+    document.querySelectorAll('.notes-tab').forEach((t,i) => t.classList.toggle('active', ['6','7','8','9','10','11','12'][i] === cls));
+    updateNotesGrid();
+  }
+  function switchSubject(subj) {
+    currentSubj = subj;
+    document.getElementById('subj-math').classList.toggle('active', subj === 'math');
+    document.getElementById('subj-sci').classList.toggle('active', subj === 'sci');
+    updateNotesGrid();
+  }
+  function updateNotesGrid() {
+    document.querySelectorAll('.notes-grid').forEach(g => g.classList.remove('active'));
+    const t = document.getElementById('notes-' + currentClass + '-' + currentSubj);
+    if (t) t.classList.add('active');
+  }
+  // Assignments switcher
+  function switchAssign(type, el) {
+    document.querySelectorAll('.assign-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.assign-list').forEach(l => l.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('assign-' + type).classList.add('active');
+  }
+  // NEP switcher
+  function switchNep(lang, el) {
+    document.querySelectorAll('.nep-lang-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nep-content').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('nep-' + lang).classList.add('active');
+  }
+  // Star rating
+  let selectedRating = 0;
+  function setRating(n) {
+    selectedRating = n;
+    document.querySelectorAll('.star').forEach((s, i) => s.classList.toggle('selected', i < n));
+  }
+  // Feedback submit
+  function submitFeedback() {
+    const name = document.getElementById('fb-name').value.trim();
+    const cls = document.getElementById('fb-class').value;
+    const text = document.getElementById('fb-text').value.trim();
+    if (!name || !cls || !text || selectedRating === 0) { alert('Please fill all fields and select a rating!'); return; }
+    document.getElementById('fb-success').style.display = 'block';
+    document.getElementById('fb-name').value = '';
+    document.getElementById('fb-class').value = '';
+    document.getElementById('fb-text').value = '';
+    document.querySelectorAll('.star').forEach(s => s.classList.remove('selected'));
+    selectedRating = 0;
+  }
+</script>
+</body>
+</html>
